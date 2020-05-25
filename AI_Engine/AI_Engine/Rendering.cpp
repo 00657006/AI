@@ -70,8 +70,8 @@ void draw_floor()
 	glVertex3f(200, 0, 200);
 	//glTexCoord2f(0, 8);
 	glVertex3f(200, 0, 0);
-	/*glEnd();
-	glDisable(GL_TEXTURE_2D);*/
+	glEnd();
+	//glDisable(GL_TEXTURE_2D);*/
 	glPopMatrix();
 }
 

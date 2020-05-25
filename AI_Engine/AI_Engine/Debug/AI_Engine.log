@@ -1,0 +1,9 @@
+﻿  Rendering.cpp
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\texture.h(7,2): warning C4091: 'extern ': 當沒有宣告變數時，忽略 '<unnamed-enum-TSIZE>' 的左方
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(21,53): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(22,54): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(23,55): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(109,21): warning C4101: 'nrChannels': 未參考的區域變數
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(109,6): warning C4101: 'Width': 未參考的區域變數
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(109,13): warning C4101: 'Height': 未參考的區域變數
+  AI_Engine.vcxproj -> C:\Users\user\Desktop\AI_Engine\AI_Engine\Debug\AI_Engine.exe

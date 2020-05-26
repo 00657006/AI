@@ -3,6 +3,7 @@
 #define RENDERING_H
 
 #include<GL\freeglut.h>
+#include<stdio.h>
 #include"texture.h"
 #include"Collision_Detection.h"
 

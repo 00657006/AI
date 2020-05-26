@@ -1,5 +1,5 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+//#define STB_IMAGE_IMPLEMENTATION
+//#include "stb_image.h"
 #include "Rendering.h"
 
 static float  Normal[][4] = { { 0.0, 0.0, -1.0 },{ 0.0, -1.0, 0.0 },{ 1.0, 0.0, 0.0 },
@@ -17,21 +17,50 @@ static float  flr_diffuse[] = { 0.7f, 0.7f, 0.7f, 1.0f };
 static float  flr_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 static float  flr_specular[] = { 0.8f, 0.8f, 0.8f, 1.0f };
 static float  flr_shininess = 16.0;
-static float  lit1_position[] = { 10, 24, 40, 1.0 }; /*point light*/
-static float  lit1_diffuse[] = { 0.7, 0.7, 0.4, 1.0 };
+static float  lit1_position[] = { 100, 20, 100, 1.0 }; /*point light*/
+static float  lit1_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };
 static float  lit1_specular[] = { 0.7, 0.7, 0.7, 1.0 };
 static float  global_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
 static GLUquadricObj* sphere = NULL, * cylinder = NULL, * Circle;
-static float ort_ang = 100.0f, per_ang = 45.0f;
-static float eye[3] = { 100.0f, 25.0f, 100.0f }, focus[3] = { 75.0f, 0.0f, 75.0f }, V_up[3] = { 0.0f, 1.0f, 0.0f };
-static float fresh_ball_diffuse[4] = { 0.4f, 0.6f, 0.05f, 1.0f };
+static float ort_ang = 150.0f, per_ang = 45.0f;
+static float eye[3] = { 100.0f, 25.0f, 100.0f }, focus[3] = { 100.0f, 0.0f, 100.0f }, V_up[3] = { 0.0f, 0.0f, -1.0f };
+static float fresh_ball_diffuse[4] = { 0.4f, 0.6f, 0.05f, 1.0f };//light green
 static float fresh_ball_ambient[4] = { 0.01f, 0.4f, 0.01f,1.0f };
 static float fresh_ball_specular[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
-static float fresh_ball_shiness = 64;
+static float fresh_ball_shiness = 64.0f;
+static float red_ball_diffuse[4] = { 0.5f, 0.01f, 0.01f, 1.0f };
+static float red_ball_ambient[4] = { 0.4f, 0.01f, 0.01f,1.0f };
+static float red_ball_specular[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+static float red_ball_shiness = 64.0f;
+static float blue_ball_diffuse[4] = { 0.1f, 0.15f, 0.6f, 1.0f };
+static float blue_ball_ambient[4] = { 0.01f, 0.01f, 0.4f,1.0f };
+static float blue_ball_specular[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+static float blue_ball_shiness = 64.0f;
+static float green_ball_diffuse[4] = { 0.1f, 0.6f, 0.05f, 1.0f };
+static float green_ball_ambient[4] = { 0.01f, 0.4f, 0.01f,1.0f };
+static float green_ball_specular[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+static float green_ball_shiness = 64.0f;
+static float pink_ball_diffuse[4] = { 0.6f, 0.4f, 0.1f, 1.0f };
+static float pink_ball_ambient[4] = { 0.4f, 0.01f, 0.01f,1.0f };
+static float pink_ball_specular[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
+static float pink_ball_shiness = 64.0f;
+static float skyblue_ball_diffuse[4] = { 0.1f, 0.4f, 0.6f, 1.0f };//light blue
+static float skyblue_ball_ambient[4] = { 0.01f, 0.01f, 0.4f,1.0f };
+static float skyblue_ball_specular[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
+static float skyblue_ball_shiness = 64.0f;
+static float metal2_ambient[] = { 0.247250, 0.224500, 0.064500, 1.000000 };/*Gold*/
+static float metal2_diffuse[] = { 0.346150, 0.314300, 0.090300, 1.000000 };
+static float metal2_specular[] = { 0.797357, 0.723991, 0.208006, 1.000000 };
+static float metal2_shininess = 40.199997;
+static float mat1_ambient[] = { 0.174500, 0.011750, 0.011750, 1 };/*¬õÄ_¥Û*/
+static float mat1_diffuse[] = { 0.614240, 0.041360, 0.041360, 1 };
+static float mat1_specular[] = { 0.727811, 0.626959, 0.626959, 1 };
+static float mat1_emission[] = { 0.4, 0.4, 0.8, 1.0 };
+static float mat1_shininess = 5;
 
 unsigned char  checkboard[TSIZE2][TSIZE2][4];   /* checkboard textures **/
-unsigned char  tree[TSIZE][TSIZE][4];   /* checkboard textures */
-unsigned char  texture[TSIZE][TSIZE][4];   /* checkboard textures */
+unsigned char  tree[TSIZE][TSIZE][4];   /* tree textures */
+unsigned char  texture[TSIZE][TSIZE][4];   /*  textures */
 unsigned char  brick[TSIZE][TSIZE][4];        /* brick wall textures */
 unsigned char  circle[TSIZE][TSIZE][4];
 unsigned char  waterwave[TSIZE][TSIZE][4];
@@ -41,6 +70,7 @@ unsigned int textName[3];                   /* declare two texture maps*/
 unsigned int TextureID[4];
 ball Ball[12];
 int NumofObjects = 12;
+
 void Location(ball* object, float x, float y, float z)
 {
 	object->xyz[0] = x;
@@ -67,7 +97,7 @@ void SetUpObject()
 			if (i == 3)
 				Location(&Ball[i], 100.0f, 2.0f, 48.0f);
 			else
-				Location(&Ball[i], 100.0f, 2.0f, 52.0f);
+				Location(&Ball[i], 100.0f, 2.0f, 100.0f);
 		}
 		else            // 4~ 11 are food
 		{
@@ -82,6 +112,10 @@ void SetUpObject()
 void draw_cube()
 {
 	int    i;
+	glMaterialfv(GL_FRONT, GL_AMBIENT, metal2_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, metal2_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, metal2_diffuse);
+	glMaterialf(GL_FRONT, GL_SHININESS, metal2_shininess);
 	for (i = 0; i < 6; i++) {
 		glNormal3fv(Normal[i]);
 		glBegin(GL_POLYGON);  /* Draw the face */
@@ -107,11 +141,11 @@ void draw_floor()
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0);
 	glVertex3f(0, 0, 0);
-	glTexCoord2f(8, 0);
+	glTexCoord2f(1, 0);
 	glVertex3f(0, 0, 200);
-	glTexCoord2f(8, 8);
+	glTexCoord2f(1, 1);
 	glVertex3f(200, 0, 200);
-	glTexCoord2f(0, 8);
+	glTexCoord2f(0, 1);
 	glVertex3f(200, 0, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -228,7 +262,7 @@ void projection(int mode)
 	switch (mode)
 	{
 	case 0:
-		if (width > height)
+		if (width < height)
 			glOrtho(-1 * ort_ang, ort_ang, -1 * ort_ang * (float)height / (float)width,
 				ort_ang * (float)height / (float)width,
 				-0.0, 100.0);
@@ -275,35 +309,96 @@ void display()
 	glutSwapBuffers();
 	glFlush();
 }
+void JudgeMaterial(const ball* object)
+{
+	switch (object->role)
+	{
+	case 0:
+		glMaterialfv(GL_FRONT, GL_AMBIENT, fresh_ball_ambient);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, fresh_ball_specular);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, fresh_ball_diffuse);
+		glMaterialf(GL_FRONT, GL_SHININESS, fresh_ball_shiness);
+		break;
+	case 1:
+		glMaterialfv(GL_FRONT, GL_AMBIENT, red_ball_ambient);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, red_ball_specular);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, red_ball_diffuse);
+		glMaterialf(GL_FRONT, GL_SHININESS, red_ball_shiness);
+		break;
+	case 2:
+		glMaterialfv(GL_FRONT, GL_AMBIENT, skyblue_ball_ambient);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, skyblue_ball_specular);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, skyblue_ball_diffuse);
+		glMaterialf(GL_FRONT, GL_SHININESS, skyblue_ball_shiness);
+		break;
+	}
+}
 void draw_balls()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		glPushMatrix();
+		glEnable(GL_LIGHTING);
+		glTranslatef(Ball[i].xyz[0], Ball[i].xyz[1], Ball[i].xyz[2]);
+		JudgeMaterial(&Ball[i]);
+		gluSphere(sphere, Ball[i].R, 12, 12);
+		glDisable(GL_LIGHTING);
+		glPopMatrix();
+	}
+}
+void draw_wall(float x, float y, float z, float  Zx, float  Zy, float  Zz)
 {
 	glPushMatrix();
 	glEnable(GL_LIGHTING);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, fresh_ball_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, fresh_ball_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, fresh_ball_diffuse);
-	glMaterialf(GL_FRONT, GL_SHININESS, fresh_ball_shiness);
-	glTranslatef(Ball[0].xyz[0], Ball[0].xyz[1], Ball[0].xyz[2]);
-	gluSphere(sphere, Ball[0].R, 12, 12);
-	glDisable(GL_LIGHTING);
-	glPopMatrix();
-
-	glPushMatrix();
-	glEnable(GL_LIGHTING);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, fresh_ball_ambient);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, fresh_ball_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, fresh_ball_diffuse);
-	glMaterialf(GL_FRONT, GL_SHININESS, fresh_ball_shiness);
-	glTranslatef(Ball[1].xyz[0], Ball[1].xyz[1], Ball[1].xyz[2]);
-	gluSphere(sphere, Ball[1].R, 12, 12);
+	glTranslatef(x, y, z);
+	glScalef(Zx, Zy, Zz);
+	draw_cube();
 	glDisable(GL_LIGHTING);
 	glPopMatrix();
 }
+void draw_maze()
+{
+	draw_wall(8.0f, 4.0f, 196.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(2.0f, 4.0f, 185.0f, 4.0f, 8.0f, 4.0f);
+
+	draw_wall(192.0f, 4.0f, 4.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(198.0f, 4.0f, 16.0f, 4.0f, 8.0f, 4.0f);
+
+	draw_wall(184.0f, 4.0f, 16.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(182.0f, 4.0f, 10.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(66.0f, 4.0f, 70.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(68.0f, 4.0f, 64.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(134.0f, 4.0f, 70.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(132.0f, 4.0f, 64.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(66.0f, 4.0f, 130.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(68.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(134.0f, 4.0f, 130.0f, 4.0f, 8.0f, 8.0f);
+
+	draw_wall(132.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(192.0f, 4.0f, 35.0f, 4.0f, 8.0f, 20.0f);
+
+	draw_wall(196.0f, 4.0f, 35.0f, 8.0f, 8.0f, 4.0f);
+}
 void draw_scene()
 {
+	glEnable(GL_LIGHTING);
 	draw_floor();
 
 	draw_balls();
+
+	draw_maze();	
+	glDisable(GL_LIGHTING);
 }
 void myIdle()
 {
@@ -312,9 +407,34 @@ void keyin(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case ' ':
+	case '+':
+		ort_ang -= 5;
+		if (ort_ang <= 10)
+			ort_ang = 10;
+		break;
+	case '-':
+		ort_ang += 5;
+		break;
+	case '8':
+		eye[2] -= 5.0f;
+		focus[2] -= 5.0f;
+		break;
+	case '2':
+		eye[2] += 5.0f;
+		focus[2] += 5.0f;
+		break;
+	case '4':
+		eye[0] -= 5.0f;
+		focus[0] -= 5.0f;
+		break;
+	case '6':
+		eye[0] += 5.0f;
+		focus[0] += 5.0f;
 		break;
 	}
+	
+
+	display();
 }
 void reshape(int w, int h)
 {

@@ -4,6 +4,7 @@
 
 #include<GL\freeglut.h>
 #include"texture.h"
+#include"Collision_Detection.h"
 
 extern int width, height;
 

@@ -24,6 +24,9 @@
     <ClCompile Include="texture.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="Collision_Dection.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rendering.h">
@@ -33,6 +36,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision_Detection.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

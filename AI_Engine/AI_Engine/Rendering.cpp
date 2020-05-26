@@ -24,6 +24,10 @@ static float  global_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
 static GLUquadricObj* sphere = NULL, * cylinder = NULL, * Circle;
 static float ort_ang = 100.0f, per_ang = 45.0f;
 static float eye[3] = { 100.0f, 25.0f, 100.0f }, focus[3] = { 75.0f, 0.0f, 75.0f }, V_up[3] = { 0.0f, 1.0f, 0.0f };
+static float fresh_ball_diffuse[4] = { 0.4f, 0.6f, 0.05f, 1.0f };
+static float fresh_ball_ambient[4] = { 0.01f, 0.4f, 0.01f,1.0f };
+static float fresh_ball_specular[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
+static float fresh_ball_shiness = 64;
 
 unsigned char  checkboard[TSIZE2][TSIZE2][4];   /* checkboard textures **/
 unsigned char  tree[TSIZE][TSIZE][4];   /* checkboard textures */
@@ -35,7 +39,46 @@ unsigned char  star[TSIZE][TSIZE][4];
 unsigned char  land[TSIZE][TSIZE][4];
 unsigned int textName[3];                   /* declare two texture maps*/
 unsigned int TextureID[4];
-
+ball Ball[12];
+int NumofObjects = 12;
+void Location(ball* object, float x, float y, float z)
+{
+	object->xyz[0] = x;
+	object->xyz[1] = y;
+	object->xyz[2] = z;
+}
+void SetUpObject()
+{
+	for (int i = 0; i < NumofObjects; i++)
+	{
+		if (i < 2)		// 0 ¡B 1 are predators
+		{
+			Ball[i].role = 0;
+			Ball[i].R = 2.0f;
+			if (i == 0)
+				Location(&Ball[i], 2.0f, 2.0f, 198.0f);
+			else
+				Location(&Ball[i], 198.0f, 2.0f, 2.0f);
+		}
+		else if (i < 4) // 2¡B3 are hovers
+		{
+			Ball[i].role = 1; 
+			Ball[i].R = 2.0f;
+			if (i == 3)
+				Location(&Ball[i], 100.0f, 2.0f, 48.0f);
+			else
+				Location(&Ball[i], 100.0f, 2.0f, 52.0f);
+		}
+		else            // 4~ 11 are food
+		{
+			Ball[i].role = 2;
+			Ball[i].R = 1.0f;
+		}			
+		Ball[i].speed[0] = 0.0f;
+		Ball[i].speed[1] = 0.0f;
+		Ball[i].speed[2] = 0.0f;
+	}
+}
 void draw_cube()
 {
 	int    i;
@@ -53,59 +96,30 @@ void draw_cube()
 void draw_floor()
 {
 	glPushMatrix();
-	/*glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBindTexture(GL_TEXTURE_2D, textName[0]);
 	glMatrixMode(GL_MODELVIEW);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, flr_diffuse);  /*diffuse color */
-	/*glMaterialfv(GL_FRONT, GL_AMBIENT, flr_ambient);
-	glNormal3f(0.0, 1.0, 0.0);*/
-	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, flr_ambient);
+	glNormal3f(0.0, 1.0, 0.0);
 	glBegin(GL_POLYGON);
-	//glTexCoord2f(0, 0);
+	glTexCoord2f(0, 0);
 	glVertex3f(0, 0, 0);
-	//glTexCoord2f(8, 0);
+	glTexCoord2f(8, 0);
 	glVertex3f(0, 0, 200);
-	//glTexCoord2f(8, 8);
+	glTexCoord2f(8, 8);
 	glVertex3f(200, 0, 200);
-	//glTexCoord2f(0, 8);
+	glTexCoord2f(0, 8);
 	glVertex3f(200, 0, 0);
 	glEnd();
-	//glDisable(GL_TEXTURE_2D);*/
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
 	glPopMatrix();
 }
-
-void Init()
+void CreateTextures()
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_DEPTH_TEST);  /*Enable depth buffer for shading computing */
-	glEnable(GL_NORMALIZE);   /*Enable mornalization  */
-
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, lit1_diffuse);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, lit1_specular);
-	glLightfv(GL_LIGHT2, GL_POSITION, lit1_position);  /*fixed position in eye space---*/
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT2);
-	glDisable(GL_LIGHTING);
-
-	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE); /* local viewer */
-
-
-	sphere = gluNewQuadric();
-	cylinder = gluNewQuadric();
-	Circle = gluNewQuadric();
-
-	gluQuadricDrawStyle(sphere, GLU_FILL);
-	gluQuadricNormals(sphere, GLU_SMOOTH);
-	gluQuadricDrawStyle(cylinder, GLU_FILL);
-	gluQuadricNormals(cylinder, GLU_SMOOTH);
-	gluQuadricDrawStyle(Circle, GLU_FILL);
-	gluQuadricNormals(Circle, GLU_SMOOTH);
-
 	int Width, Height, nrChannels;
 
 	/*unsigned char* data = stbi_load("basket_burned.png", &Width, &Height, &nrChannels, 0);
@@ -135,7 +149,7 @@ void Init()
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE2, TSIZE2, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, checkboard);
-	
+
 	brick_pattern();
 	glBindTexture(GL_TEXTURE_2D, textName[1]);
 
@@ -157,6 +171,40 @@ void Init()
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE, TSIZE, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, tree);
+}
+void Init()
+{
+	CreateTextures();
+	SetUpObject();
+
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);  /*Enable depth buffer for shading computing */
+	glEnable(GL_NORMALIZE);   /*Enable mornalization  */
+
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, lit1_diffuse);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, lit1_specular);
+	glLightfv(GL_LIGHT2, GL_POSITION, lit1_position);  /*fixed position in eye space---*/
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT2);
+	glDisable(GL_LIGHTING);
+
+	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE); /* local viewer */
+
+
+	sphere = gluNewQuadric();
+	cylinder = gluNewQuadric();
+	Circle = gluNewQuadric();
+
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	gluQuadricNormals(sphere, GLU_SMOOTH);
+	gluQuadricDrawStyle(cylinder, GLU_FILL);
+	gluQuadricNormals(cylinder, GLU_SMOOTH);
+	gluQuadricDrawStyle(Circle, GLU_FILL);
+	gluQuadricNormals(Circle, GLU_SMOOTH);
 
 }
 
@@ -227,9 +275,35 @@ void display()
 	glutSwapBuffers();
 	glFlush();
 }
+void draw_balls()
+{
+	glPushMatrix();
+	glEnable(GL_LIGHTING);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, fresh_ball_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, fresh_ball_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, fresh_ball_diffuse);
+	glMaterialf(GL_FRONT, GL_SHININESS, fresh_ball_shiness);
+	glTranslatef(Ball[0].xyz[0], Ball[0].xyz[1], Ball[0].xyz[2]);
+	gluSphere(sphere, Ball[0].R, 12, 12);
+	glDisable(GL_LIGHTING);
+	glPopMatrix();
+
+	glPushMatrix();
+	glEnable(GL_LIGHTING);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, fresh_ball_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, fresh_ball_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, fresh_ball_diffuse);
+	glMaterialf(GL_FRONT, GL_SHININESS, fresh_ball_shiness);
+	glTranslatef(Ball[1].xyz[0], Ball[1].xyz[1], Ball[1].xyz[2]);
+	gluSphere(sphere, Ball[1].R, 12, 12);
+	glDisable(GL_LIGHTING);
+	glPopMatrix();
+}
 void draw_scene()
 {
 	draw_floor();
+
+	draw_balls();
 }
 void myIdle()
 {

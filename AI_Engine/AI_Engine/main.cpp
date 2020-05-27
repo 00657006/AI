@@ -10,6 +10,7 @@ void top_func(int value)
 	switch (value)
 	{
 	case Reset:
+		SetUpObject();
 		break;
 	}
 }

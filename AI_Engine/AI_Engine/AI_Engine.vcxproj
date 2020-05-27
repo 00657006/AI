@@ -141,13 +141,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Collision_Dection.cpp" />
+    <ClCompile Include="Collision_Detection.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mathematical_Formula.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision_Detection.h" />
+    <ClInclude Include="Mathematical_Formula.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />

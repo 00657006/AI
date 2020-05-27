@@ -24,7 +24,10 @@
     <ClCompile Include="texture.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
-    <ClCompile Include="Collision_Dection.cpp">
+    <ClCompile Include="Collision_Detection.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematical_Formula.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +42,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Collision_Detection.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematical_Formula.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

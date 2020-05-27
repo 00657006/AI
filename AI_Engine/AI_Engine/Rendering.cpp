@@ -71,6 +71,12 @@ unsigned int TextureID[4];
 ball Ball[12];
 int NumofObjects = 12;
 
+void InitSpeed(ball* object, float x, float y, float z)
+{
+	object->speed[0] = x;
+	object->speed[1] = y;
+	object->speed[2] = z;
+}
 void Location(ball* object, float x, float y, float z)
 {
 	object->xyz[0] = x;
@@ -86,27 +92,43 @@ void SetUpObject()
 			Ball[i].role = 0;
 			Ball[i].R = 2.0f;
 			if (i == 0)
+			{
 				Location(&Ball[i], 2.0f, 2.0f, 198.0f);
+				InitSpeed(&Ball[i], 0.0f, 0.0f, -1.0f);
+				Ball[i].Area = 0;
+				Ball[i].BottleNeck = 0;
+			}	
 			else
+			{
 				Location(&Ball[i], 198.0f, 2.0f, 2.0f);
+				InitSpeed(&Ball[i], 0.0f, 0.0f, 1.0f);
+				Ball[i].Area = 1;
+				Ball[i].BottleNeck = 0;
+			}
 		}
 		else if (i < 4) // 2、3 are hovers
 		{
 			Ball[i].role = 1; 
 			Ball[i].R = 2.0f;
-			if (i == 3)
-				Location(&Ball[i], 100.0f, 2.0f, 48.0f);
+			if (i == 2)
+			{
+				Location(&Ball[i], 100.0f, 2.0f, 42.0f);
+				InitSpeed(&Ball[i], 0.0f, 0.0f, 1.0f);
+			}
 			else
+			{
 				Location(&Ball[i], 100.0f, 2.0f, 100.0f);
+				InitSpeed(&Ball[i], 1.0f, 0.0f, 0.0f);
+			}
+				
 		}
 		else            // 4~ 11 are food
 		{
 			Ball[i].role = 2;
 			Ball[i].R = 1.0f;
+			if (i == 4)
+				Location(&Ball[i], 100.0f, 1.0f, 100.0f);
 		}			
-		Ball[i].speed[0] = 0.0f;
-		Ball[i].speed[1] = 0.0f;
-		Ball[i].speed[2] = 0.0f;
 	}
 }
 void draw_cube()
@@ -335,7 +357,7 @@ void JudgeMaterial(const ball* object)
 }
 void draw_balls()
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		glPushMatrix();
 		glEnable(GL_LIGHTING);
@@ -358,37 +380,33 @@ void draw_wall(float x, float y, float z, float  Zx, float  Zy, float  Zz)
 }
 void draw_maze()
 {
-	draw_wall(8.0f, 4.0f, 196.0f, 4.0f, 8.0f, 8.0f);
+	draw_wall(8.0f, 4.0f, 196.0f, 4.0f, 8.0f, 8.0f);/*left bottom corner*/
+	draw_wall(2.0f, 4.0f, 184.0f, 4.0f, 8.0f, 4.0f);
 
-	draw_wall(2.0f, 4.0f, 185.0f, 4.0f, 8.0f, 4.0f);
-
-	draw_wall(192.0f, 4.0f, 4.0f, 4.0f, 8.0f, 8.0f);
-
+	draw_wall(192.0f, 4.0f, 4.0f, 4.0f, 8.0f, 8.0f);/*right top corner*/
 	draw_wall(198.0f, 4.0f, 16.0f, 4.0f, 8.0f, 4.0f);
 
-	draw_wall(184.0f, 4.0f, 16.0f, 8.0f, 8.0f, 4.0f);
-
+	draw_wall(184.0f, 4.0f, 16.0f, 8.0f, 8.0f, 4.0f);/*右上出發點*/
 	draw_wall(182.0f, 4.0f, 10.0f, 4.0f, 8.0f, 8.0f);
 
-	draw_wall(66.0f, 4.0f, 70.0f, 4.0f, 8.0f, 8.0f);
-
+	draw_wall(66.0f, 4.0f, 70.0f, 4.0f, 8.0f, 8.0f);/*open space*/
 	draw_wall(68.0f, 4.0f, 64.0f, 8.0f, 8.0f, 4.0f);
-
 	draw_wall(134.0f, 4.0f, 70.0f, 4.0f, 8.0f, 8.0f);
-
 	draw_wall(132.0f, 4.0f, 64.0f, 8.0f, 8.0f, 4.0f);
-
 	draw_wall(66.0f, 4.0f, 130.0f, 4.0f, 8.0f, 8.0f);
-
 	draw_wall(68.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
-
 	draw_wall(134.0f, 4.0f, 130.0f, 4.0f, 8.0f, 8.0f);
-
 	draw_wall(132.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
 
-	draw_wall(192.0f, 4.0f, 35.0f, 4.0f, 8.0f, 20.0f);
-
+	draw_wall(192.0f, 4.0f, 35.0f, 4.0f, 8.0f, 20.0f);/*右上出發點*/
 	draw_wall(196.0f, 4.0f, 35.0f, 8.0f, 8.0f, 4.0f);
+
+	draw_wall(100.0f, 4.0f, 48.0f, 54.0f, 8.0f, 4.0f); /*open space 外圍牆(上)*/
+	draw_wall(150.0f, 4.0f, 100.0f, 4.0f, 8.0f, 54.0f);/*open space 外圍牆(右)*/
+	draw_wall(100.0f, 4.0f, 150.0f, 54.0f, 8.0f, 4.0f);/*open space 外圍牆(下)*/
+	draw_wall(50.0f, 4.0f, 100.0f, 4.0f, 8.0f, 54.0f);/*open space 外圍牆(左)*/
+
+
 }
 void draw_scene()
 {
@@ -400,8 +418,19 @@ void draw_scene()
 	draw_maze();	
 	glDisable(GL_LIGHTING);
 }
+void Forward_Proceeding(ball* object)
+{
+	object->xyz[0] += object->speed[0];
+	object->xyz[1] += object->speed[1];
+	object->xyz[2] += object->speed[2];
+	Detect_Boundary(object);
+}
 void myIdle()
 {
+	Forward_Proceeding(&Ball[0]);
+	Forward_Proceeding(&Ball[1]);
+	Forward_Proceeding(&Ball[3]);
+	display();
 }
 void keyin(unsigned char key, int x, int y)
 {

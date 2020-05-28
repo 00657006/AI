@@ -69,7 +69,7 @@ unsigned char  land[TSIZE][TSIZE][4];
 unsigned int textName[3];                   /* declare two texture maps*/
 unsigned int TextureID[4];
 ball Ball[12];
-int NumofObjects = 12;
+int NumofBalls = 12;
 
 void InitSpeed(ball* object, float x, float y, float z)
 {
@@ -85,7 +85,7 @@ void Location(ball* object, float x, float y, float z)
 }
 void SetUpObject()
 {
-	for (int i = 0; i < NumofObjects; i++)
+	for (int i = 0; i < NumofBalls; i++)
 	{
 		if (i < 2)		// 0 ¡B 1 are predators
 		{
@@ -96,6 +96,7 @@ void SetUpObject()
 				Location(&Ball[i], 2.0f, 2.0f, 198.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, -1.0f);
 				Ball[i].Area = 0;
+				Ball[i].right=true;
 				Ball[i].BottleNeck = 0;
 			}	
 			else
@@ -103,6 +104,7 @@ void SetUpObject()
 				Location(&Ball[i], 198.0f, 2.0f, 2.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, 1.0f);
 				Ball[i].Area = 1;
+				Ball[i].right = true;
 				Ball[i].BottleNeck = 0;
 			}
 		}
@@ -418,18 +420,19 @@ void draw_scene()
 	draw_maze();	
 	glDisable(GL_LIGHTING);
 }
-void Forward_Proceeding(ball* object)
+void Forward_Proceeding(ball* object, int WhichOne)
 {
 	object->xyz[0] += object->speed[0];
 	object->xyz[1] += object->speed[1];
 	object->xyz[2] += object->speed[2];
 	Detect_Boundary(object);
+	Investigation(Ball, WhichOne);
 }
 void myIdle()
 {
-	Forward_Proceeding(&Ball[0]);
-	Forward_Proceeding(&Ball[1]);
-	Forward_Proceeding(&Ball[3]);
+	Forward_Proceeding(&Ball[0], 0);
+	Forward_Proceeding(&Ball[1], 1);
+	Forward_Proceeding(&Ball[3], 3);
 	display();
 }
 void keyin(unsigned char key, int x, int y)
@@ -461,8 +464,6 @@ void keyin(unsigned char key, int x, int y)
 		focus[0] += 5.0f;
 		break;
 	}
-	
-
 	display();
 }
 void reshape(int w, int h)

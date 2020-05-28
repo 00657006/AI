@@ -17,6 +17,8 @@ typedef struct ball {
 };
 
 extern ball Ball[12];
+extern int NumofBalls;
 
 void Detect_Boundary(ball* );
+void Investigation(ball* , int );
 #endif

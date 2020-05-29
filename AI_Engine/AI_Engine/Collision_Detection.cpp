@@ -75,7 +75,7 @@ void Predator_Detection(ball * object)
 			object->Area = 1;
 			object->BottleNeck = 0;
 		}
-		if (Wall_Detection(object, 184.0f, 194.0f, 8.0f, 14.0f))
+		if (Wall_Detection(object, 190.0f, 194.0f, 8.0f, 14.0f))
 		{
 			if (object->right)
 				RotateY(object->speed, -90);	//右轉
@@ -134,7 +134,6 @@ void Detect_Boundary(ball* object)//檢查是否超出地圖範圍或與牆壁發生碰撞
 			object->xyz[0] += direction[0] * 5;
 			object->xyz[2] += direction[2] * 5;
 			gap++;
-			fprintf(stderr, "%d\n", gap);
 			if (gap == 14)
 			{
 				object->xyz[0] = 100.0f;

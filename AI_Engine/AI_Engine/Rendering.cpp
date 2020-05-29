@@ -1,5 +1,5 @@
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "Rendering.h"
 
 static float  Normal[][4] = { { 0.0, 0.0, -1.0 },{ 0.0, -1.0, 0.0 },{ 1.0, 0.0, 0.0 },
@@ -57,6 +57,7 @@ static float mat1_diffuse[] = { 0.614240, 0.041360, 0.041360, 1 };
 static float mat1_specular[] = { 0.727811, 0.626959, 0.626959, 1 };
 static float mat1_emission[] = { 0.4, 0.4, 0.8, 1.0 };
 static float mat1_shininess = 5;
+static unsigned int Canves;
 
 unsigned char  checkboard[TSIZE2][TSIZE2][4];   /* checkboard textures **/
 unsigned char  tree[TSIZE][TSIZE][4];   /* tree textures */
@@ -83,6 +84,78 @@ void Location(ball* object, float x, float y, float z)
 	object->xyz[1] = y;
 	object->xyz[2] = z;
 }
+void LUT(unsigned char maze[201][201])//初始化obstacle的位置
+{
+	for (int i = 0; i <= 200; i++)//一開始全部為100
+		for (int j = 0; j <= 200; j++)
+			maze[i][j] = 100;
+	for(int i=6;i<=10;i++)
+		for (int j = 192; j <= 200; j++)
+			maze[j][i] = 255;
+	for (int i = 0; i <= 4; i++)
+		for (int j = 182; j <= 186; j++)
+			maze[j][i] = 255;
+	for (int i = 48; i <= 52; i++)
+		for (int j = 73; j <= 127; j++)
+			maze[j][i] = 255;
+	for (int i = 73; i <= 127; i++)
+		for (int j = 46; j <= 50; j++)
+			maze[j][i] = 255;
+	for (int i = 148; i <= 152; i++)
+		for (int j = 73; j <= 127; j++)
+			maze[j][i] = 255;
+	for (int i = 73; i <= 127; i++)
+		for (int j = 148; j <= 152; j++)
+			maze[j][i] = 255;
+	for (int i = 148; i <= 152; i++)
+		for (int j = 73; j <= 127; j++)
+			maze[j][i] = 255;
+	for (int i = 64; i <= 72; i++)
+		for (int j = 60; j <= 64; j++)
+			maze[j][i] = 255;
+	for (int i = 128; i <= 136; i++)
+		for (int j = 62; j <= 66; j++)
+			maze[j][i] = 255;
+	for (int i = 132; i <= 136; i++)
+		for (int j = 66; j <= 74; j++)
+			maze[j][i] = 255;
+	for (int i = 64; i <= 68; i++)
+		for (int j = 126; j <= 134; j++)
+			maze[j][i] = 255;
+	for (int i = 64; i <= 72; i++)
+		for (int j = 136; j <=140 ; j++)
+			maze[j][i] = 255;
+	for (int i = 132; i <= 136; i++)
+		for (int j = 132; j <= 140; j++)
+			maze[j][i] = 255;
+	for (int i = 128; i <= 136; i++)
+		for (int j = 136; j <= 140; j++)
+			maze[j][i] = 255;
+	for (int i = 190; i <= 194; i++)
+		for (int j = 0; j <= 8; j++)
+			maze[j][i] = 255;
+	for (int i = 196; i <= 200; i++)
+		for (int j = 14; j <= 18; j++)
+			maze[j][i] = 255;
+	for (int i = 180; i <= 188; i++)
+		for (int j = 14; j <= 18; j++)
+			maze[j][i] = 255;
+	for (int i = 180; i <= 184; i++)
+		for (int j = 6; j <= 14; j++)
+			maze[j][i] = 255;
+	for (int i = 190; i <= 194; i++)
+		for (int j = 25; j <= 35; j++)
+			maze[j][i] = 255;
+	for (int i = 192; i <= 200; i++)
+		for (int j = 33; j <= 37; j++)
+			maze[j][i] = 255;	
+}
+void CopyMaze(unsigned char want[201][201], const unsigned char becopied[201][201])
+{
+	for (int i = 0; i <= 200; i++)
+		for (int j = 0; j <= 200; j++)
+			want[i][j] = becopied[i][j];
+}
 void SetUpObject()
 {
 	for (int i = 0; i < NumofBalls; i++)
@@ -95,17 +168,21 @@ void SetUpObject()
 			{
 				Location(&Ball[i], 2.0f, 2.0f, 198.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, -1.0f);
+				LUT(Ball[i].maze);
 				Ball[i].Area = 0;
-				Ball[i].right=true;
+				Ball[i].Direction = 0;
 				Ball[i].BottleNeck = 0;
+				Ball[i].right = true;
 			}	
 			else
 			{
 				Location(&Ball[i], 198.0f, 2.0f, 2.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, 1.0f);
+				CopyMaze(Ball[i].maze, Ball[0].maze);
 				Ball[i].Area = 1;
-				Ball[i].right = true;
+				Ball[i].Direction = 1;
 				Ball[i].BottleNeck = 0;
+				Ball[i].right = true;
 			}
 		}
 		else if (i < 4) // 2、3 are hovers
@@ -175,25 +252,35 @@ void draw_floor()
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
 	glPopMatrix();
+
+	glPushMatrix();
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, Canves);
+	glMatrixMode(GL_MODELVIEW);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, flr_diffuse);  /*diffuse color */
+	glMaterialfv(GL_FRONT, GL_AMBIENT, flr_ambient);
+	glNormal3f(0.0, 1.0, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0, 0);
+	glVertex3f(176, 0, 150);
+	glTexCoord2f(1, 0);
+	glVertex3f(176, 0, 180);
+	glTexCoord2f(1, 1);
+	glVertex3f(188, 0, 180);
+	glTexCoord2f(0, 1);
+	glVertex3f(188, 0, 150);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+	glPopMatrix();
 }
+
 void CreateTextures()
 {
-	int Width, Height, nrChannels;
-
-	/*unsigned char* data = stbi_load("basket_burned.png", &Width, &Height, &nrChannels, 0);
-	glGenTextures(1, &ball);
-	glBindTexture(GL_TEXTURE_2D, ball);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, data);
-
-	stbi_image_free(data);*/
-
+	
+	
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	glGenTextures(3, textName);
 
@@ -229,6 +316,22 @@ void CreateTextures()
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TSIZE, TSIZE, 0, GL_RGBA,
 		GL_UNSIGNED_BYTE, tree);
+
+	int Width, Height, nrChannels;
+
+	unsigned char* data = stbi_load("hole.jpg", &Width, &Height, &nrChannels, 0);
+	glGenTextures(1, &Canves);
+	glBindTexture(GL_TEXTURE_2D, Canves);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, data);
+
+	stbi_image_free(data);
 }
 void Init()
 {
@@ -264,6 +367,7 @@ void Init()
 	gluQuadricDrawStyle(Circle, GLU_FILL);
 	gluQuadricNormals(Circle, GLU_SMOOTH);
 
+	
 }
 
 void eye_location(int mode)
@@ -427,6 +531,13 @@ void Forward_Proceeding(ball* object, int WhichOne)
 	object->xyz[2] += object->speed[2];
 	Detect_Boundary(object);
 	Investigation(Ball, WhichOne);
+	for(int i=object->xyz[2]-object->R;i<= object->xyz[2] + object->R;i++)
+		for (int j = object->xyz[0] - object->R; j <= object->xyz[0] + object->R; j++)
+		{
+			if (object->maze[i][j] == 255)
+				continue;
+			object->maze[i][j] = WhichOne;
+		}
 }
 void myIdle()
 {

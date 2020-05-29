@@ -2,6 +2,7 @@
 #ifndef RENDERING_H
 #define RENDERING_H
 
+
 #include<GL\freeglut.h>
 #include<stdio.h>
 #include"texture.h"

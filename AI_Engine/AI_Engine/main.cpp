@@ -1,9 +1,12 @@
 #include"Rendering.h"
 
 int width = 1200, height = 700;
+
 enum list {
 	Reset
 };
+
+
 
 void top_func(int value)
 {
@@ -23,6 +26,7 @@ void main(int argc, char** argv)
 	glutCreateWindow("AI_Engine");
 
 	Init();
+	
 
 	int top_m = glutCreateMenu(top_func);
 	glutAddMenuEntry("Reset!", Reset);

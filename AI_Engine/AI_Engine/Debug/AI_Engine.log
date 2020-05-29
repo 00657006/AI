@@ -1,3 +1,17 @@
-﻿  Collision_Detection.cpp
-C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Collision_Detection.h(17,2): warning C4091: 'typedef ': 當沒有宣告變數時，忽略 'ball' 的左方
+﻿  Rendering.cpp
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\texture.h(7,2): warning C4091: 'extern ': 當沒有宣告變數時，忽略 '<unnamed-enum-TSIZE>' 的左方
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Collision_Detection.h(19,2): warning C4091: 'typedef ': 當沒有宣告變數時，忽略 'ball' 的左方
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(21,53): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(22,54): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(23,55): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(51,74): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(52,74): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(53,75): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(54,42): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(55,65): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(56,65): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(57,66): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(58,53): warning C4305: '正在初始化': 從 'double' 轉換為 'float'，是由較大的類型轉換為較小的類型，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(534,11): warning C4244: '正在初始化': 將 'float' 轉換為 'int'，由於類型不同，可能導致資料遺失
+C:\Users\user\Desktop\AI_Engine\AI_Engine\AI_Engine\Rendering.cpp(535,14): warning C4244: '正在初始化': 將 'float' 轉換為 'int'，由於類型不同，可能導致資料遺失
   AI_Engine.vcxproj -> C:\Users\user\Desktop\AI_Engine\AI_Engine\Debug\AI_Engine.exe

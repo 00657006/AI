@@ -199,6 +199,23 @@ void Predator_Detection(ball * object)
 		DecideDirection(object);	
 	else if (Conditional_Judge(object, '&', 137.0f, 150.0f, 0.0f, 13.0f))//第5區:右上的Portal
 		DecideDirection(object);
+	else
+	{
+		if (object->Area == 7)
+		{
+			object->BottleNeck++;
+			if (object->BottleNeck > 300)
+			{
+				object->BottleNeck = 0;
+				object->right = object->right == true ? false : true;
+			}
+		}
+		else
+		{
+			object->Area = 7;
+			object->BottleNeck = 0;
+		}
+	}
 }
 void Detect_Boundary(ball* object, int WhichOne)//檢查是否超出地圖範圍或與牆壁發生碰撞
 {
@@ -223,26 +240,26 @@ void Detect_Boundary(ball* object, int WhichOne)//檢查是否超出地圖範圍或與牆壁發
 				{
 					object->xyz[0] = 100.0f;
 					object->xyz[2] = 100.0f;
-					int Bindex = Maze[(int)object->xyz[0]][(int)object->xyz[2]];
+					int Bindex = Maze[(int)object->xyz[2]][(int)object->xyz[0]];
 					if (Bindex >= 2 && Bindex < NumofBalls)
 					{
 						if (object->R > Ball[Bindex].R)
 						{
-							Maze[(int)object->xyz[0]][(int)object->xyz[2]] = WhichOne;
+							Maze[(int)object->xyz[2]][(int)object->xyz[0]] = WhichOne;
 							object->R += Ball[Bindex].R;
 							object->xyz[1] = object->R;
 							Ball[Bindex].R = 0.0f;
 						}
 						else if (object->R < Ball[Bindex].R)
 						{
-							Maze[(int)object->xyz[0]][(int)object->xyz[2]] = Bindex;
+							Maze[(int)object->xyz[2]][(int)object->xyz[0]] = Bindex;
 							Ball[Bindex].R += object->R;
 							Ball[Bindex].xyz[1] = object->R;
 							object->R = 0.0f;
 						}
 					}
 					else
-						Maze[(int)object->xyz[0]][(int)object->xyz[2]] = WhichOne;
+						Maze[(int)object->xyz[2]][(int)object->xyz[0]] = WhichOne;
 					gap = 0;
 				}
 			}
@@ -286,14 +303,15 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 				Bindex = StartPos[2] - length;
 				if (Bindex == 0)
 					break;
-				if (Maze[StartPos[0]][Bindex] == 255)
+				if (Maze[Bindex][StartPos[0]] == 255)
 					break;
-				else if (Maze[StartPos[0]][Bindex] >= 2 && Maze[StartPos[0]][Bindex] < 4)
+				else if (Maze[Bindex][StartPos[0]] >= 2 && Maze[Bindex][StartPos[0]] < 4)
 				{
-					int enemy = Maze[StartPos[0]][Bindex];
+					int enemy = Maze[Bindex][StartPos[0]];
 					if (Balls[enemy].R >= Balls[i].R)//escape
 					{
 						fprintf(stderr, "%d escape from %d\n", i, enemy);
+						fprintf(stderr, "%d %d\n", StartPos[0], Bindex);
 						RotateY(Ball[i].speed, -90);
 						Ball[i].Direction = (Ball[i].Direction + 1) % 4;
 						break;
@@ -304,9 +322,9 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 						break;
 					}
 				}
-				else if (Maze[StartPos[0]][Bindex] >= 3 && Maze[StartPos[0]][Bindex] < NumofBalls)
+				else if (Maze[Bindex][StartPos[0]] >= 3 && Maze[Bindex][StartPos[0]] < NumofBalls)
 				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[0]][Bindex]);
+					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[0]]);
 					break;
 				}
 			}	
@@ -315,11 +333,11 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 				Bindex = StartPos[0] + length;
 				if (Bindex == 200)
 					break;
-				if (Maze[Bindex][StartPos[2]] == 255)
+				if (Maze[StartPos[2]][Bindex] == 255)
 					break;
-				else if (Maze[Bindex][StartPos[2]] >= 2 && Maze[Bindex][StartPos[2]] < 4)
+				else if (Maze[StartPos[2]][Bindex] >= 2 && Maze[StartPos[2]][Bindex] < 4)
 				{
-					int enemy = Maze[Bindex][StartPos[2]];
+					int enemy = Maze[StartPos[2]][Bindex];
 					if (Balls[enemy].R >= Balls[i].R)//escape
 					{
 						RotateY(Ball[i].speed, -90);
@@ -333,9 +351,9 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 						break;
 					}
 				}
-				else if (Maze[Bindex][StartPos[2]] >= 3 && Maze[Bindex][StartPos[2]] < NumofBalls)
+				else if (Maze[StartPos[2]][Bindex] >= 3 && Maze[StartPos[2]][Bindex] < NumofBalls)
 				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[2]]);
+					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[2]][Bindex]);
 					break;
 				}
 			}
@@ -344,11 +362,11 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 				Bindex = StartPos[2] + length;
 				if (Bindex == 200)
 					break;
-				if (Maze[StartPos[0]][Bindex] == 255)
+				if (Maze[Bindex][StartPos[0]] == 255)
 					break;
-				else if (Maze[StartPos[0]][Bindex] >= 2 && Maze[StartPos[0]][Bindex] < 4)
+				else if (Maze[Bindex][StartPos[0]] >= 2 && Maze[Bindex][StartPos[0]] < 4)
 				{
-					int enemy = Maze[StartPos[0]][Bindex];
+					int enemy = Maze[Bindex][StartPos[0]];
 					if (Balls[enemy].R >= Balls[i].R)//escape
 					{
 						fprintf(stderr, "%d %d \n", StartPos[0], Bindex);
@@ -365,9 +383,9 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 						break;
 					}
 				}
-				else if (Maze[StartPos[0]][Bindex] >= 3 && Maze[StartPos[0]][Bindex] < NumofBalls)
+				else if (Maze[Bindex][StartPos[0]] >= 3 && Maze[Bindex][StartPos[0]] < NumofBalls)
 				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[0]][Bindex]);
+					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[0]]);
 					break;
 				}
 			}
@@ -376,11 +394,11 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 				Bindex = StartPos[0] - length;
 				if (Bindex == 0)
 					break;
-				if (Maze[Bindex][StartPos[2]] == 255)
+				if (Maze[StartPos[2]][Bindex] == 255)
 					break;
-				else if (Maze[Bindex][StartPos[2]] >= 2 && Maze[Bindex][StartPos[2]] < 4)
+				else if (Maze[StartPos[2]][Bindex] >= 2 && Maze[StartPos[2]][Bindex] < 4)
 				{
-					int enemy = Maze[Bindex][StartPos[2]];
+					int enemy = Maze[StartPos[2]][Bindex];
 					if (Balls[enemy].R >= Balls[i].R)//escape
 					{
 						fprintf(stderr, "%d %d \n", Bindex, StartPos[2]);
@@ -395,9 +413,9 @@ void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 
 						break;
 					}
 				}
-				else if (Maze[Bindex][StartPos[2]] >= 3 && Maze[Bindex][StartPos[2]] < NumofBalls)
+				else if (Maze[StartPos[2]][Bindex] >= 3 && Maze[StartPos[2]][Bindex] < NumofBalls)
 				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[2]]);
+					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[2]][Bindex]);
 					break;
 				}
 			}

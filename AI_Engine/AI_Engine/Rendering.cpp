@@ -156,7 +156,7 @@ void LUT()//初始化obstacle的位置
 void SetUpObject()
 {
 	LUT();
-			
+
 	for (int i = 0; i < NumofBalls; i++)
 	{
 		if (i < 2)		// 0 、 1 are predators
@@ -167,7 +167,9 @@ void SetUpObject()
 			{
 				Location(&Ball[i], 2.0f, 2.0f, 198.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, -1.0f);
-				Maze[2][198] = 0;
+				for (int k = Ball[i].xyz[0] - Ball[i].R; k <= Ball[i].xyz[0] + Ball[i].R; k++)
+					for (int j = Ball[i].xyz[2] - Ball[i].R; j <= Ball[i].R + Ball[i].xyz[2]; j++)
+						Maze[j][k] = 0;
 				Ball[i].Area = 0;
 				Ball[i].Direction = 0;
 				Ball[i].BottleNeck = 0;
@@ -175,9 +177,12 @@ void SetUpObject()
 			}	
 			else
 			{
-				Maze[198][2] = 1;
+				
 				Location(&Ball[i], 198.0f, 2.0f, 2.0f);
 				InitSpeed(&Ball[i], 0.0f, 0.0f, 1.0f);
+				for (int k = Ball[i].xyz[0] - Ball[i].R; k <= Ball[i].xyz[0] + Ball[i].R; k++)
+					for (int j = Ball[i].xyz[2] - Ball[i].R; j <= Ball[i].R + Ball[i].xyz[2]; j++)
+						Maze[j][k] = 1;
 				Ball[i].Area = 1;
 				Ball[i].Direction = 2;
 				Ball[i].BottleNeck = 0;
@@ -190,9 +195,12 @@ void SetUpObject()
 			Ball[i].R = 2.0f;
 			if (i == 2)
 			{
-				Maze[100][198] = 2;
 				Location(&Ball[i], 100.0f, 2.0f, 198.0f);
 				InitSpeed(&Ball[i], -1.0f, 0.0f, 0.0f);
+				
+				for (int k = Ball[i].xyz[0] - Ball[i].R; k <= Ball[i].xyz[0] + Ball[i].R; k++)
+					for (int j = Ball[i].xyz[2] - Ball[i].R; j <= Ball[i].R + Ball[i].xyz[2]; j++)
+						Maze[j][k] = 2;
 				Ball[i].Area = 7;
 				Ball[i].Direction = 3;
 				Ball[i].BottleNeck = 0;
@@ -200,9 +208,12 @@ void SetUpObject()
 			}
 			else
 			{
-				Maze[100][136] = 3;
+				
 				Location(&Ball[i], 100.0f, 2.0f, 136.0f);
 				InitSpeed(&Ball[i], 1.0f, 0.0f, 0.0f);
+				for (int k = Ball[i].xyz[0] - Ball[i].R; k <= Ball[i].xyz[0] + Ball[i].R; k++)
+					for (int j = Ball[i].xyz[2] - Ball[i].R; j <= Ball[i].R + Ball[i].xyz[2]; j++)
+						Maze[j][k] = 3;
 				Ball[i].Area = 2;
 				Ball[i].Direction = 1;
 				Ball[i].BottleNeck = 0;
@@ -217,8 +228,11 @@ void SetUpObject()
 			InitSpeed(&Ball[i], 0.0f, 0.0f, 0.0f);
 			if (i == 4)
 			{
-				Maze[100][100] = 4;
+				
 				Location(&Ball[i], 100.0f, 1.0f, 100.0f);
+				for (int k = Ball[i].xyz[0] - Ball[i].R; k <= Ball[i].xyz[0] + Ball[i].R; k++)
+					for (int j = Ball[i].xyz[2] - Ball[i].R; j <= Ball[i].R + Ball[i].xyz[2]; j++)
+						Maze[j][k] = 4;
 				Ball[i].Area = 2;
 			}
 		}			
@@ -589,121 +603,196 @@ void Forward_Proceeding(ball* object, int WhichOne)
 		if (before == 0 || before == 2)
 		{
 			for (int i = StartPos[2], length = 0; length <= len; i += Unit_Vector[2], length++) {
-				if (Maze[StartPos[0]][i] >= 0 && Maze[StartPos[0]][i] <= NumofBalls)
+				for (int m = StartPos[0] - object->R; m <= StartPos[0] + object->R; m++)
 				{
-					int another = Maze[StartPos[0]][i];
-					if ((another == 0 || another == 1) && (WhichOne == 0 || WhichOne == 1))
+					if (Maze[i][m] >= 0 && Maze[i][m] <= NumofBalls)
 					{
-						if (length == len)
+						int another = Maze[i][m];
+						if ((another == 0 || another == 1) && (WhichOne == 0 || WhichOne == 1))
 						{
-							Maze[StartPos[0]][i] = WhichOne;
-							
-							break;;
+							if (length == len)
+							{
+								for (int j = i - object->R; j <= i + object->R; j++)
+									for (int k = StartPos[0] - object->R; k <= StartPos[0] - object->R; k++)
+										Maze[j][k] = WhichOne;
+								break;
+							}
+							else
+							{
+								for (int j = i - object->R; j <= i + object->R; j++)
+									for (int k = StartPos[0] - object->R; k <= StartPos[0] - object->R; k++)
+										Maze[j][k] = 100;
+								continue;
+							}
 						}
-						else
+						if ((another == 2 || another == 3) && (WhichOne == 2 || WhichOne == 3))
 						{
-							Maze[StartPos[0]][i] = 100;
-							continue;
-						}	
-					}
-					if ((another == 2 || another == 3) && (WhichOne == 2 || WhichOne == 3))
-					{
-						if (length == len)
-						{
-							Maze[StartPos[0]][i] = WhichOne;
-							continue;
+							if (length == len)
+							{
+								for (int j = i - object->R; j <= i + object->R; j++)
+									for (int k = StartPos[0] - object->R; k <= StartPos[0] - object->R; k++)
+										Maze[j][k] = WhichOne;
+								continue;
+							}
+							else
+							{
+								for (int j = i - object->R; j <= i + object->R; j++)
+									for (int k = StartPos[0] - object->R; k <= StartPos[0] - object->R; k++)
+										Maze[j][k] = 100;
+								continue;
+							}
 						}
-						else
+						if (object->R < Ball[another].R)//be ate
 						{
-							Maze[StartPos[0]][i] = 100;
-							continue;
+							object->role = 255;
+							break;
 						}
-					}
-					if (object->R < Ball[another].R)//be ate
-					{
-						object->role = 255;
-						break;
-					}
-					else if (object->R == Ball[another].R)
-					{
-						object->role = 255;
-						Ball[another].role = 255;
-						Maze[StartPos[0]][i] = 100;
-					}
-					else if (object->R > Ball[another].R)//eat another
-					{
-						object->R += Ball[another].R;
-						Ball[another].R = 0.0f;
-						if (another < 4)
+						else if (object->R == Ball[another].R)
+						{
+							object->role = 255;
 							Ball[another].role = 255;
-						Maze[StartPos[0]][i] = 100;
-						Maze[(int)object->xyz[0]][(int)object->xyz[2]] = i;
-						break;
+							for (int j = i - object->R; j <= i + object->R; j++)
+								for (int k = StartPos[0] - object->R; k <= StartPos[0] - object->R; k++)
+									Maze[j][k] = 100;
+							if (StartPos[0] != m)
+							{
+								for (int j = i - Ball[another].R; j <= i + Ball[another].R; j++)
+									for (int k = m - Ball[another].R; k <= m - Ball[another].R; k++)
+										Maze[j][k] = 100;
+							}
+						}
+						else if (object->R > Ball[another].R)//eat another
+						{
+							object->R += Ball[another].R;
+							object->xyz[1] = object->R;
+							for (int j = i - Ball[another].R; j <= i + Ball[another].R; j++)
+								for (int k = m - Ball[another].R; k <= m + Ball[another].R; k++)
+									Maze[j][k] = 100;
+							Ball[another].R = 0.0f;
+							if (another < 4)
+								Ball[another].role = 255;
+							if (StartPos[2] - object->R < 0)
+								object->xyz[2] = object->R;
+							else if (StartPos[2] + object->R > 200)
+								object->xyz[2] = 200 - object->R;
+							if (StartPos[0] - object->R < 0)
+								object->xyz[0] = object->R;
+							else if (StartPos[0] + object->R > 200)
+								object->xyz[0] = 200 - object->R;
+							for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+								for (int k = object->xyz[0] - object->R; k <= object->xyz[0] - object->R; k++)
+									Maze[j][k] = WhichOne;
+							break;
+						}
 					}
 				}
+				
 			}
 		}
 		else
 		{
 			for (int i = StartPos[0], length = 0; length <= len; i += Unit_Vector[0], length++) {
-				if (Maze[i][StartPos[2]] >= 0 && Maze[i][StartPos[2]] <= NumofBalls)
+				for (int m = StartPos[2] - object->R; m <= StartPos[2] + object->R; m++)
 				{
-					int another = Maze[i][StartPos[2]];
-					if ((another == 0 || another == 1) && (WhichOne == 0 || WhichOne == 1))
+					if (Maze[m][i] >= 0 && Maze[m][i] <= NumofBalls)
 					{
-						if (length == len)
+						int another = Maze[m][i];
+						if ((another == 0 || another == 1) && (WhichOne == 0 || WhichOne == 1))
 						{
-							Maze[i][StartPos[2]] = WhichOne;
+							if (length == len)
+							{
+								for (int j = StartPos[2] - object->R; j <= StartPos[2] + object->R; j++)
+									for (int k = i - object->R; k <= i - object->R; k++)
+										Maze[j][k] = WhichOne;
+								break;
+							}
+							else
+							{
+								for (int j = StartPos[2] - object->R; j <= StartPos[2] + object->R; j++)
+									for (int k = i - object->R; k <= i - object->R; k++)
+										Maze[j][k] = 100;
+								continue;
+							}
+						}
+						if ((another == 2 || another == 3) && (WhichOne == 2 || WhichOne == 3))
+						{
+							if (length == len)
+							{
+								for (int j = StartPos[2] - object->R; j <= StartPos[2] + object->R; j++)
+									for (int k = i - object->R; k <= i - object->R; k++)
+										Maze[j][k] = WhichOne;
+								continue;
+							}
+							else
+							{
+								for (int j = StartPos[2] - object->R; j <= StartPos[2] + object->R; j++)
+									for (int k = i - object->R; k <= i - object->R; k++)
+										Maze[j][k] = 100;
+								continue;
+							}
+						}
+						if (object->R < Ball[another].R)//be ate
+						{
+							fprintf(stderr, "#3Which = %d another = %d\n", WhichOne, another);
+							object->role = 255;
 							break;
 						}
-						else
+						else if (object->R == Ball[another].R)
 						{
-							Maze[i][StartPos[2]] = 100;
-							continue;
-						}
-					}
-					if ((another == 2 || another == 3) && (WhichOne == 2 || WhichOne == 3))
-					{
-						if (length == len)
-						{
-							Maze[i][StartPos[2]] = WhichOne;
-							continue;
-						}
-						else
-						{
-							Maze[i][StartPos[2]] = 100;
-							continue;
-						}
-					}
-					if (object->R < Ball[another].R)//be ate
-					{
-						fprintf(stderr, "#3Which = %d another = %d\n", WhichOne, another);
-						object->role = 255;
-						break;
-					}
-					else if (object->R == Ball[another].R)
-					{
-						object->role = 255;
-						Ball[another].role = 255;
-						Maze[i][StartPos[2]] = 100;
-					}
-					else if (object->R > Ball[another].R)//eat another
-					{
-						fprintf(stderr, "#4Which = %d another = %d\n", WhichOne, another);
-						object->R += Ball[another].R;
-						Ball[another].R = 0.0f;
-						if (another < 4)
+							object->role = 255;
 							Ball[another].role = 255;
-						Maze[i][StartPos[2]] = 100;
-						Maze[(int)object->xyz[0]][(int)object->xyz[2]] = i;
-						break;
+							for (int j = StartPos[2] - object->R; j <= StartPos[2] + object->R; j++)
+								for (int k = i - object->R; k <= i - object->R; k++)
+									Maze[j][k] = 100;
+							if (StartPos[2] != m)
+							{
+								for (int j = m - Ball[another].R; j <= m + Ball[another].R; j++)
+									for (int k = i - Ball[another].R; k <= i - Ball[another].R; k++)
+										Maze[j][k] = 100;
+							}
+						}
+						else if (object->R > Ball[another].R)//eat another
+						{
+							fprintf(stderr, "#4Which = %d another = %d\n", WhichOne, another);
+							object->R += Ball[another].R;
+							object->xyz[1] = object->R;
+							for (int j = m - Ball[another].R; j <= m + Ball[another].R; j++)
+								for (int k = i - Ball[another].R; k <= i + Ball[another].R; k++)
+								{
+									fprintf(stderr, "%d %d\n", j, k);
+									Maze[j][k] = 100;
+								}
+							Ball[another].R = 0.0f;
+							if (another < 4)
+								Ball[another].role = 255;
+							if (StartPos[2] - object->R < 0)
+								object->xyz[2] = object->R;
+							else if (StartPos[2] + object->R > 200)
+								object->xyz[2] = 200 - object->R;
+							if (StartPos[0] - object->R < 0)
+								object->xyz[0] = object->R;
+							else if (StartPos[0] + object->R > 200)
+								object->xyz[0] = 200 - object->R;
+							
+									
+							for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+								for (int k = object->xyz[0] - object->R; k <= object->xyz[0] - object->R; k++)
+									Maze[j][k] = WhichOne;
+							break;
+						}
 					}
 				}
+				
 			}
 		}
 	}
 	else
-		Maze[StartPos[0]][StartPos[2]] = WhichOne;
+	{
+		for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+			for (int k = object->xyz[0] - object->R; k <= object->xyz[0] - object->R; k++)
+				Maze[j][k] = WhichOne;
+	}
+		
 }
 void myIdle()
 {
@@ -721,7 +810,7 @@ void myIdle()
 			{
 				Ball[i].BottleNeck = 0;
 				Ball[i].R = 1.0f;
-				Maze[(int)Ball[i].xyz[0]][(int)Ball[i].xyz[2]] = i;
+				Maze[(int)Ball[i].xyz[2]][(int)Ball[i].xyz[0]] = i;
 			}
 		}
 	Forward_Proceeding(&Ball[0], 0);

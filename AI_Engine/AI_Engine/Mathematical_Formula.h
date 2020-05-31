@@ -9,4 +9,5 @@
 void RotateY(float*, float);
 void normalize(float*);
 double Length(const float*, const float*);
+int Len(float[3]);
 #endif

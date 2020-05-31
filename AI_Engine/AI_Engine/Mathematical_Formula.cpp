@@ -21,3 +21,7 @@ double Length(const float* a, const float* b)
 	float c[3] = { a[0] - b[0], a[1] - b[1],a[2] - b[2] };
 	return sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
 }
+int Len(float c[3])
+{
+	 return (int)sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
+}

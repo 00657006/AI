@@ -10,6 +10,10 @@
 #include"Mathematical_Formula.h"
 
 extern int width, height;
+extern int Display_Mode;
+extern enum list {
+	Reset, FULL_SCREEN, FOLLOW_BALL_0, FOLLOW_BALL_1
+};
 
 void Init();
 void display();

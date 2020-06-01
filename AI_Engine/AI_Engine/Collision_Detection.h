@@ -17,6 +17,8 @@ typedef struct ball {
 	int BottleNeck;		//prevent the ball from falling into loop
 	unsigned char role;				//predator ¡B hover or food
 	bool right;
+	unsigned char prey;
+	unsigned char Target[3];
 };
 
 extern ball Ball[12];
@@ -27,4 +29,5 @@ extern unsigned char gap;
 
 void Detect_Boundary(ball* , int);
 void Investigation(ball*);
+void Reaction(ball* );
 #endif

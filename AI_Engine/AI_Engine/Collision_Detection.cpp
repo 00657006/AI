@@ -214,6 +214,7 @@ void Predator_Detection(ball * object)
 		{
 			object->Area = 7;
 			object->BottleNeck = 0;
+			
 		}
 	}
 }
@@ -290,139 +291,6 @@ void Detect_Boundary(ball* object, int WhichOne)//檢查是否超出地圖範圍或與牆壁發
 		break;
 	}
 }
-void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food(屬於看到的反應 State : Search)
-{
-	for (int i = 0; i < 2; i++)
-	{
-		int Bindex = 0;
-		int StartPos[3] = { Balls[i].xyz[0], Balls[i].xyz[1] ,Balls[i].xyz[2] };
-		for (int length = 0; length <= 50; length++)
-		{
-			if (Balls[i].Direction == 0)
-			{
-				Bindex = StartPos[2] - length;
-				if (Bindex == 0)
-					break;
-				if (Maze[Bindex][StartPos[0]] == 255)
-					break;
-				else if (Maze[Bindex][StartPos[0]] >= 2 && Maze[Bindex][StartPos[0]] < 4)
-				{
-					int enemy = Maze[Bindex][StartPos[0]];
-					if (Balls[enemy].R >= Balls[i].R)//escape
-					{
-						fprintf(stderr, "%d escape from %d\n", i, enemy);
-						fprintf(stderr, "%d %d\n", StartPos[0], Bindex);
-						RotateY(Ball[i].speed, -90);
-						Ball[i].Direction = (Ball[i].Direction + 1) % 4;
-						break;
-					}
-					else if (Balls[enemy].R < Balls[i].R)//pursuit
-					{
-						fprintf(stderr, "%d pursuit %d\n", i, enemy);
-						break;
-					}
-				}
-				else if (Maze[Bindex][StartPos[0]] >= 3 && Maze[Bindex][StartPos[0]] < NumofBalls)
-				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[0]]);
-					break;
-				}
-			}	
-			else if (Balls[i].Direction == 1)
-			{
-				Bindex = StartPos[0] + length;
-				if (Bindex == 200)
-					break;
-				if (Maze[StartPos[2]][Bindex] == 255)
-					break;
-				else if (Maze[StartPos[2]][Bindex] >= 2 && Maze[StartPos[2]][Bindex] < 4)
-				{
-					int enemy = Maze[StartPos[2]][Bindex];
-					if (Balls[enemy].R >= Balls[i].R)//escape
-					{
-						RotateY(Ball[i].speed, -90);
-						Ball[i].Direction = (Ball[i].Direction + 1) % 4;
-						fprintf(stderr, "%d escape from %d\n", i, enemy);
-						break;
-					}
-					else if (Balls[enemy].R < Balls[i].R)//pursuit
-					{
-						fprintf(stderr, "%d pursuit %d\n", i, enemy);
-						break;
-					}
-				}
-				else if (Maze[StartPos[2]][Bindex] >= 3 && Maze[StartPos[2]][Bindex] < NumofBalls)
-				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[2]][Bindex]);
-					break;
-				}
-			}
-			else if (Balls[i].Direction == 2)
-			{
-				Bindex = StartPos[2] + length;
-				if (Bindex == 200)
-					break;
-				if (Maze[Bindex][StartPos[0]] == 255)
-					break;
-				else if (Maze[Bindex][StartPos[0]] >= 2 && Maze[Bindex][StartPos[0]] < 4)
-				{
-					int enemy = Maze[Bindex][StartPos[0]];
-					if (Balls[enemy].R >= Balls[i].R)//escape
-					{
-						fprintf(stderr, "%d %d \n", StartPos[0], Bindex);
-						fprintf(stderr, "%d escape from %d\n", i, enemy);
-						fprintf(stderr, "%d\n", Maze[StartPos[0]][Bindex]);
-						fprintf(stderr, "%f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[2]);
-						RotateY(Ball[i].speed, -90);
-						Ball[i].Direction = (Ball[i].Direction + 1) % 4;
-						break;
-					}
-					else if (Balls[enemy].R < Balls[i].R)//pursuit
-					{
-						fprintf(stderr, "%d pursuit %d\n", i, enemy);
-						break;
-					}
-				}
-				else if (Maze[Bindex][StartPos[0]] >= 3 && Maze[Bindex][StartPos[0]] < NumofBalls)
-				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][StartPos[0]]);
-					break;
-				}
-			}
-			else if (Balls[i].Direction == 3)
-			{
-				Bindex = StartPos[0] - length;
-				if (Bindex == 0)
-					break;
-				if (Maze[StartPos[2]][Bindex] == 255)
-					break;
-				else if (Maze[StartPos[2]][Bindex] >= 2 && Maze[StartPos[2]][Bindex] < 4)
-				{
-					int enemy = Maze[StartPos[2]][Bindex];
-					if (Balls[enemy].R >= Balls[i].R)//escape
-					{
-						fprintf(stderr, "%d %d \n", Bindex, StartPos[2]);
-						fprintf(stderr, "%d escape from %d\n", i, enemy);
-						RotateY(Ball[i].speed, -90);
-						Ball[i].Direction = (Ball[i].Direction + 1) % 4;
-						break;
-					}
-					else if (Balls[enemy].R < Balls[i].R)//pursuit
-					{
-						fprintf(stderr, "%d pursuit %d\n", i, enemy);
-						break;
-					}
-				}
-				else if (Maze[StartPos[2]][Bindex] >= 3 && Maze[StartPos[2]][Bindex] < NumofBalls)
-				{
-					fprintf(stderr, "%d pursuit food %d \n", i, Maze[StartPos[2]][Bindex]);
-					break;
-				}
-			}
-				
-		}
-	}
-}
 unsigned char FuzzyLogic(float distance)
 {//0 represent close  1 represent comfortable 2 represent far
 	if (distance <= 15)
@@ -442,3 +310,333 @@ unsigned char FuzzyLogic(float distance)
 	else
 		return 2;
 }
+void Investigation(ball* Balls)//Predator偵測是否遇到enemy或food，鎖定prey(屬於看到的反應 State : Search)
+{
+	for (int i = 0; i < 2; i++)
+	{
+		int Bindex = 0;
+		int StartPos[3] = { Balls[i].xyz[0], Balls[i].xyz[1] ,Balls[i].xyz[2] };
+		for (int length = 0, Break = 0; length <= 50; length++)
+		{
+			if (Break == 1)
+				break;
+			if (Balls[i].Direction == 0)
+			{
+				for (int k = StartPos[0] - Balls[i].R; k <= StartPos[0] + Balls[i].R; k++)
+				{
+					Bindex = StartPos[2] - length;
+					if (Bindex == 0)
+					{
+						Break = 1;
+						break;
+					}
+					if (Maze[Bindex][k] == 255)
+					{
+						Break = 1;
+						break;
+					}
+					else if (Maze[Bindex][k] >= 2 && Maze[Bindex][k] < 4)
+					{
+						int enemy = Maze[Bindex][k];
+						if (Balls[enemy].R >= Balls[i].R)//escape
+						{
+							fprintf(stderr, "%d escape from %d\n", i, enemy);
+							fprintf(stderr, "%d %d\n", k, Bindex);
+							fprintf(stderr, "Fuzzy %d \n", FuzzyLogic(length));
+							if (FuzzyLogic(length) <= 1)
+							{
+								RotateY(Ball[i].speed, -90);
+								Ball[i].Direction = (Ball[i].Direction + 1) % 4;
+								Ball[i].prey = enemy;
+								/*if (FuzzyLogic(length) == 1)
+									Ball[i].speed[0] *= 1.5;
+								else
+									Ball[i].speed[0] *= 2;*/
+							}
+							Break = 1;
+							break;
+						}
+						else if (Balls[enemy].R < Balls[i].R)//pursuit
+						{
+							fprintf(stderr, "%d pursuit %d\n", i, enemy);
+							if (Ball[i].prey != enemy)
+							{
+								fprintf(stderr, "%d pursuit %d\n", i, enemy);
+								fprintf(stderr, "%d\n", FuzzyLogic(length));
+								Ball[i].prey = enemy;
+								if (FuzzyLogic(length) == 0)//close
+									Ball[i].speed[2] *= 1.2;
+								else if (FuzzyLogic(length) == 1)//comfortable
+									Ball[i].speed[2] *= 1.5;
+								else
+									Ball[i].speed[2] *= 2;
+							}
+							if (Ball[enemy].Direction == 1 || Ball[enemy].Direction == 3)//對方換方向，即將消失
+							{
+								fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
+								Ball[i].Target[0] = Ball[enemy].xyz[0];
+								Ball[i].Target[1] = Ball[enemy].xyz[1];
+								Ball[i].Target[2] = Ball[enemy].xyz[2];
+							}
+							Break = 1;
+							break;
+						}
+					}
+					else if (Maze[Bindex][k] >= 3 && Maze[Bindex][k] < NumofBalls)
+					{
+						
+						if (Ball[i].prey != Maze[Bindex][k])
+						{
+							fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][k]);
+							fprintf(stderr, "%d\n", FuzzyLogic(length));
+							Ball[i].prey = Maze[Bindex][k];
+							if (FuzzyLogic(length) == 0)//close
+								Ball[i].speed[2] *= 1.2;
+							else if (FuzzyLogic(length) == 1)//comfortable
+								Ball[i].speed[2] *= 1.5;
+							else
+								Ball[i].speed[2] *= 2;
+						}
+						Break = 1;
+						break;
+					}
+				}
+				
+			}	
+			else if (Balls[i].Direction == 1)
+			{
+				for (int k = StartPos[2] - Balls[i].R; k <= StartPos[2] + Balls[i].R; k++)
+				{
+					//fprintf(stderr, "%d %d %d %f %f\n", k, StartPos[2], i, Ball[i].xyz[0], Ball[i].xyz[2]);
+					Bindex = StartPos[0] + length;
+					if (Bindex == 200)
+					{
+						Break = 1;
+						break;
+					}
+					if (Maze[k][Bindex] == 255)
+					{
+						Break = 1;
+						break;
+					}
+					else if (Maze[k][Bindex] >= 2 && Maze[k][Bindex] < 4)
+					{
+						int enemy = Maze[k][Bindex];
+						if (Balls[enemy].R >= Balls[i].R)//escape
+						{
+							fprintf(stderr, "%d escape from %d\n", i, enemy);
+							fprintf(stderr, "Fuzzy %d \n", FuzzyLogic(length));
+							if (FuzzyLogic(length) <= 1)
+							{
+								RotateY(Ball[i].speed, -90);
+								Ball[i].Direction = (Ball[i].Direction + 1) % 4;
+								Ball[i].prey = enemy;
+								/*if (FuzzyLogic(length) == 1)
+									Ball[i].speed[2] *= 1.5;
+								else
+									Ball[i].speed[2] *= 2;*/
+							}
+							Break = 1;
+							break;
+						}
+						else if (Balls[enemy].R < Balls[i].R)//pursuit
+						{
+							
+							if (Ball[i].prey != enemy)
+							{
+								fprintf(stderr, "%d pursuit %d\n", i, enemy);
+								fprintf(stderr, "%d\n", FuzzyLogic(length));
+								Ball[i].prey = enemy;
+								fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
+								if (FuzzyLogic(length) == 0)//close
+									Ball[i].speed[2] *= 1.2;
+								else if (FuzzyLogic(length) == 1)//comfortable
+									Ball[i].speed[2] *= 1.5;
+								else
+									Ball[i].speed[2] *= 2;
+							}
+							Break = 1;
+							break;
+						}
+					}
+					else if (Maze[k][Bindex] >= 3 && Maze[k][Bindex] < NumofBalls)
+					{
+						
+						if (Ball[i].prey != Maze[k][Bindex])
+						{
+							fprintf(stderr, "%d pursuit food %d \n", i, Maze[k][Bindex]);
+							fprintf(stderr, "%d\n", FuzzyLogic(length));
+							Ball[i].prey = Maze[k][Bindex];
+							if (FuzzyLogic(length) == 0)//close
+								Ball[i].speed[2] *= 1.2;
+							else if (FuzzyLogic(length) == 1)//comfortable
+								Ball[i].speed[2] *= 1.5;
+							else
+								Ball[i].speed[2] *= 2;
+						}
+						Break = 1;
+						break;
+					}
+				}
+				
+			}
+			else if (Balls[i].Direction == 2)
+			{
+				for (int k = StartPos[0] - Balls[i].R; k <= StartPos[0] + Balls[i].R; k++)
+				{
+					Bindex = StartPos[2] + length;
+					if (Bindex == 200)
+					{
+						Break = 1;
+						break;
+					}
+						
+					if (Maze[Bindex][k] == 255)
+					{
+						Break = 1;
+						break;
+					}
+					else if (Maze[Bindex][k] >= 2 && Maze[Bindex][k] < 4)
+					{
+						int enemy = Maze[Bindex][k];
+						if (Balls[enemy].R >= Balls[i].R)//escape
+						{
+							fprintf(stderr, "%d %d \n", k, Bindex);
+							fprintf(stderr, "%d escape from %d\n", i, enemy);
+							fprintf(stderr, "%d\n", Maze[k][Bindex]);
+							fprintf(stderr, "%f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[2]);
+							if (FuzzyLogic(length) <= 1)
+							{
+								RotateY(Ball[i].speed, -90);
+								Ball[i].Direction = (Ball[i].Direction + 1) % 4;
+								Ball[i].prey = enemy;
+								/*if (FuzzyLogic(length) == 1)
+									Ball[i].speed[0] *= 1.5;
+								else
+									Ball[i].speed[0] *= 2;*/
+							}
+							Break = 1;
+							break;
+						}
+						else if (Balls[enemy].R < Balls[i].R)//pursuit
+						{
+							
+							if (Ball[i].prey != enemy)
+							{
+								fprintf(stderr, "%d pursuit %d\n", i, enemy);
+								fprintf(stderr, "%d\n", FuzzyLogic(length));
+								fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
+								Ball[i].prey = enemy;
+								if (FuzzyLogic(length) == 0)//close
+									Ball[i].speed[2] *= 1.2;
+								else if (FuzzyLogic(length) == 1)//comfortable
+									Ball[i].speed[2] *= 1.5;
+								else
+									Ball[i].speed[2] *= 2;
+							}
+							Break = 1;
+							break;
+						}
+					}
+					else if (Maze[Bindex][k] >= 3 && Maze[Bindex][k] < NumofBalls)
+					{
+						
+						if (Ball[i].prey != Maze[Bindex][k])
+						{
+							fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][k]);
+							fprintf(stderr, "%d\n", FuzzyLogic(length));
+							Ball[i].prey = Maze[Bindex][k];
+							if (FuzzyLogic(length) == 0)//close
+								Ball[i].speed[2] *= 1.2;
+							else if (FuzzyLogic(length) == 1)//comfortable
+								Ball[i].speed[2] *= 1.5;
+							else
+								Ball[i].speed[2] *= 2;
+						}
+						Break = 1;
+						break;
+					}
+				}
+				
+			}
+			else if (Balls[i].Direction == 3)
+			{
+			for (int k = StartPos[2] - Balls[i].R; k <= StartPos[2] + Balls[i].R; k++)
+			{
+				Bindex = StartPos[0] - length;
+				if (Bindex == 0)
+				{
+					Break = 1;
+					break;
+				}
+				if (Maze[k][Bindex] == 255)
+				{
+					Break = 1;
+					break;
+				}
+				else if (Maze[k][Bindex] >= 2 && Maze[k][Bindex] < 4)
+				{
+					int enemy = Maze[k][Bindex];
+					if (Balls[enemy].R >= Balls[i].R)//escape
+					{
+						fprintf(stderr, "%d %d %d\n", Bindex, k, StartPos[2]);
+						fprintf(stderr, "%d escape from %d\n", i, enemy);
+						fprintf(stderr, "%d\n", FuzzyLogic(length));
+						if (FuzzyLogic(length) <= 1)
+						{
+							RotateY(Ball[i].speed, -90);
+							Ball[i].Direction = (Ball[i].Direction + 1) % 4;
+							Ball[i].prey = enemy;
+							/*if(FuzzyLogic(length)==1)
+								Ball[i].speed[2] *= 1.5;
+							else
+								Ball[i].speed[2] *= 2;*/
+						}
+						Break = 1;
+						break;
+					}
+					else if (Balls[enemy].R < Balls[i].R)//pursuit
+					{
+						
+						if (Ball[i].prey != enemy)
+						{
+							fprintf(stderr, "%d pursuit %d\n", i, enemy);
+							fprintf(stderr, "%d\n", FuzzyLogic(length));
+							fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
+							Ball[i].prey = enemy;
+							if (FuzzyLogic(length) == 0)//close
+								Ball[i].speed[2] *= 1.2;
+							else if (FuzzyLogic(length) == 1)//comfortable
+								Ball[i].speed[2] *= 1.5;
+							else
+								Ball[i].speed[2] *= 2;
+						}
+						Break = 1;
+						break;
+					}
+				}
+				else if (Maze[k][Bindex] >= 3 && Maze[k][Bindex] < NumofBalls)
+				{
+					
+					if (Ball[i].prey != Maze[k][Bindex])
+					{
+						fprintf(stderr, "%d pursuit food %d \n", i, Maze[k][Bindex]);
+						fprintf(stderr, "%d\n", FuzzyLogic(length));
+						Ball[i].prey = Maze[k][Bindex];
+						if (FuzzyLogic(length) == 0)//close
+							Ball[i].speed[2] *= 1.2;
+						else if (FuzzyLogic(length) == 1)//comfortable
+							Ball[i].speed[2] *= 1.5;
+						else
+							Ball[i].speed[2] *= 2;
+					}
+					Break = 1;
+					break;
+				}
+			}
+			}
+				
+		}
+	}
+}
+

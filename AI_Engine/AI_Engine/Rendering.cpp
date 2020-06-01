@@ -21,6 +21,11 @@ static float  lit1_position[] = { 100.0f, 20.0f, 100.0f, 1.00f }; /*point light*
 static float  lit1_diffuse[] = { 0.9f, 0.9f, 0.9f, 1.0f };
 static float  lit1_specular[] = { 0.7f, 0.7f, 0.7f, 1.0f};
 static float  global_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+static float  plastic1_ambient[] = { 0, 0, 0, 1.000000 };/*塑膠-紅*/
+static float  plastic1_diffuse[] = { 0.60000, 0.0050, 0.3000, 1.000000 };
+static float  plastic1_specular[] = { 0.200000, 0.200000, 0.200000, 1.000000 };
+static float  plastic1_shininess = 5.0;
+
 static GLUquadricObj* sphere = NULL, * cylinder = NULL, * Circle;
 static float ort_ang = 150.0f, per_ang = 45.0f;
 static float eye[3] = { 100.0f, 25.0f, 100.0f }, focus[3] = { 100.0f, 0.0f, 100.0f }, V_up[3] = { 0.0f, 0.0f, -1.0f };
@@ -155,6 +160,33 @@ void LUT()//初始化obstacle的位置
 	for (int i = 192; i <= 200; i++)
 		for (int j = 33; j <= 37; j++)
 			Maze[j][i] = 255;
+	for (int i = 0; i <= 25; i++)
+		for (int j = 98; j <= 102; j++)
+			Maze[j][i] = 255;
+	for (int i = 22; i <= 27; i++)
+		for (int j = 60; j <= 140; j++)
+			Maze[j][i] = 255;
+	for (int i = 24; i <= 28; i++)
+		for (int j = 167; j <= 200; j++)
+			Maze[j][i] = 255;
+	for (int i = 68; i <= 72; i++)
+		for (int j = 192; j <= 200; j++)
+			Maze[j][i] = 255;
+	for (int i = 62; i <= 78; i++)
+		for (int j = 188; j <= 192; j++)
+			Maze[j][i] = 255;
+	for (int i = 50; i <= 90; i++)
+		for (int j = 174; j <= 178; j++)
+			Maze[j][i] = 255;
+	for (int i = 86; i <= 90; i++)
+		for (int j = 178; j <= 200; j++)
+			Maze[j][i] = 255;
+	for (int i = 90; i <= 110; i++)
+		for (int j = 188; j <= 192; j++)
+			Maze[j][i] = 255;
+	for (int i = 108; i <= 112; i++)
+		for (int j = 166; j <= 188; j++)
+			Maze[j][i] = 255;
 }
 void SetUpObject()
 {
@@ -223,6 +255,41 @@ void SetUpObject()
 				Location(&Ball[i], 100.0f, 1.0f, 100.0f, i);
 				Ball[i].Area = 2;
 			}
+			else if (i == 5)
+			{
+				Location(&Ball[i], 76.0f, 1.0f, 196.0f, i);
+				Ball[i].Area = 7;
+			}
+			else if (i == 6)
+			{
+				Location(&Ball[i], 5.0f, 1.0f, 94.0f, i);
+				Ball[i].Area = 9;
+			}
+			else if (i == 7)
+			{
+				Location(&Ball[i], 107.0f, 1.0f, 42.0f, i);
+				Ball[i].Area = 6;
+			}
+			else if (i == 8)
+			{
+				Location(&Ball[i], 195.0f, 1.0f, 60.0f, i);
+				Ball[i].Area = 8;
+			}
+			else if (i == 9)
+			{
+				Location(&Ball[i], 100.0f, 1.0f, 185.0f, i);
+				Ball[i].Area = 7;
+			}
+			else if (i == 10)
+			{
+				Location(&Ball[i], 20.0f, 1.0f, 198.0f, i);
+				Ball[i].Area = 7;
+			}
+			else if (i == 11)
+			{
+				Location(&Ball[i], 175.0f, 1.0f, 195.0f, i);
+				Ball[i].Area = 9;
+			}
 		}			
 	}
 }
@@ -278,7 +345,7 @@ void ApplyTexture(float left, float right, float bottom, float top, float height
 void draw_floor()
 {
 	ApplyTexture(0.0f, 200.0f, 0.0f, 200.0f, 0.0f, textName[0]);
-	ApplyTexture(175.0f, 188.0f, 162.0f, 175.0f, 0.01f, Canves[Cindex]);
+	ApplyTexture(162.0f, 175.0f, 150.0f, 163.0f, 0.01f, Canves[Cindex]);
 	ApplyTexture(62.5f, 52.0f, 113.0f, 87.0f, 0.01f, Canves[Cindex]);
 	ApplyTexture(150.0f, 137.0f, 13.0f, 0.0f, 0.01f, Canves[Cindex]);
 }
@@ -509,7 +576,7 @@ void JudgeMaterial(const ball* object)
 }
 void draw_balls()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < NumofBalls; i++)
 	{
 		if (Ball[i].role != 255)
 		{
@@ -522,6 +589,24 @@ void draw_balls()
 			glPopMatrix();
 		}
 	}
+}
+void draw_cylinder(float x, float y, float z)
+{
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, textName[1]);
+	glTranslated(x, y, z);
+	glRotated(-90, 1, 0, 0);
+	glScaled(4, 4, 8);
+	gluQuadricTexture(cylinder, GL_TRUE);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, plastic1_ambient);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, plastic1_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, plastic1_diffuse);
+	glMaterialf(GL_FRONT, GL_SHININESS, plastic1_shininess);
+	gluCylinder(cylinder, 1, 0, 1, 24, 24);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 void draw_wall(float x, float y, float z, float  Zx, float  Zy, float  Zz)
 {
@@ -552,6 +637,10 @@ void draw_maze()
 	draw_wall(68.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
 	draw_wall(134.0f, 4.0f, 130.0f, 4.0f, 8.0f, 8.0f);
 	draw_wall(132.0f, 4.0f, 136.0f, 8.0f, 8.0f, 4.0f);
+	draw_cylinder(144.0f, 0.0f, 144.0f);//cylinder(右下)
+	draw_cylinder(144.0f, 0.0f, 56.0f);//cylinder(右上)
+	draw_cylinder(56.0f, 0.0f, 144.0f);//cylinder(左下)
+	draw_cylinder(56.0f, 0.0f, 56.0f);//cylinder(左上)
 
 	draw_wall(192.0f, 4.0f, 35.0f, 4.0f, 8.0f, 20.0f);/*右上出發點*/
 	draw_wall(196.0f, 4.0f, 35.0f, 8.0f, 8.0f, 4.0f);
@@ -561,8 +650,24 @@ void draw_maze()
 	draw_wall(100.0f, 4.0f, 150.0f, 54.0f, 8.0f, 4.0f);/*open space 外圍牆(下)*/
 	draw_wall(50.0f, 4.0f, 100.0f, 4.0f, 8.0f, 54.0f);/*open space 外圍牆(左)*/
 
+	draw_wall(26.0f, 4.0f, 183.0f, 4.0f, 8.0f, 34.0f);/*第7區 最左wall*/
+	draw_wall(73.0f, 4.0f, 190.0f, 10.0f, 8.0f, 4.0f);/*第7區 T字wall(上)*/
+	draw_wall(70.0f, 4.0f, 196.0f, 4.0f, 8.0f, 8.0f);/*第7區 T字wall(下)*/
+	draw_wall(70.0f, 4.0f, 176.0f, 40.0f, 8.0f, 4.0f);/*第7區 刀字wall(上)*/
+	draw_wall(88.0f, 4.0f, 189.0f, 4.0f, 8.0f, 22.0f);/*第7區 刀字wall(下)*/
+	draw_wall(110.0f, 4.0f, 190.0f, 40.0f, 8.0f, 4.0f);/*第7區 倒刀字wall(上)*/
+	draw_wall(110.0f, 4.0f, 178.0f, 4.0f, 8.0f, 24.0f);/*第7區 倒刀字wall(下)*/
 
+	draw_cylinder(194.0f, 0.0f, 194.0f);//右下角
+	draw_cylinder(6.0f, 0.0f, 6.0f);//左下角
+
+	draw_wall(12.5f, 4.0f, 100.0f, 25.0f, 8.0f, 4.0f);/*第9區 一字wall*/
+	draw_wall(14.0f, 4.0f, 100.0f, 5.0f, 8.0f, 80.0f);/*第9區 | 字wall*/
+
+	draw_wall(187.5f, 4.0f, 100.0f, 25.0f, 8.0f, 4.0f);/*第8區 一字wall*/
+	draw_wall(198.0f, 4.0f, 100.0f, 4.0f, 8.0f, 60.0f);/*第8區 | 字wall*/
 }
+
 void draw_scene()
 {
 	glEnable(GL_LIGHTING);
@@ -598,7 +703,7 @@ void Forward_Proceeding(ball* object, int WhichOne)
 			for (int i = StartPos[2], length = 0; length <= len; i += Unit_Vector[2], length++) {
 				for (int m = StartPos[0] - object->R; m <= StartPos[0] + object->R; m++)
 				{
-					if (Maze[i][m] >= 0 && Maze[i][m] <= NumofBalls)
+					if (Maze[i][m] >= 0 && Maze[i][m] < NumofBalls)
 					{
 						int another = Maze[i][m];
 						if ((another == 0 || another == 1) && (WhichOne == 0 || WhichOne == 1))
@@ -656,6 +761,7 @@ void Forward_Proceeding(ball* object, int WhichOne)
 						}
 						else if (object->R > Ball[another].R)//eat another
 						{
+							int tmp = object->R;
 							object->R += Ball[another].R;
 							object->prey = 255;
 							fprintf(stderr, "speed = %f %f %f \n", object->speed[0], object->speed[1], object->speed[2]);
@@ -667,17 +773,23 @@ void Forward_Proceeding(ball* object, int WhichOne)
 							for (int j = Ball[another].xyz[2] - Ball[another].R; j <= Ball[another].xyz[2] + Ball[another].R; j++)
 								for (int k = Ball[another].xyz[0] - Ball[another].R; k <= Ball[another].xyz[0] + Ball[another].R; k++)
 									Maze[j][k] = 100;
-							Ball[another].R = 0.0f;
+							
 							if (another < 4)
 								Ball[another].role = 255;
 							if (StartPos[2] - object->R < 0)
 								object->xyz[2] = object->R;
 							else if (StartPos[2] + object->R > 200)
 								object->xyz[2] = 200 - object->R;
+							
 							if (StartPos[0] - object->R < 0)
 								object->xyz[0] = object->R;
 							else if (StartPos[0] + object->R > 200)
 								object->xyz[0] = 200 - object->R;
+							else if (tmp != object->R && Maze[StartPos[2] ][(int)(StartPos[0]+ Ball[another].R + object->R)] == 255)
+								object->xyz[0] -= Ball[another].R;
+							else if (tmp != object->R && Maze[StartPos[2] ][(int)(StartPos[0]- Ball[another].R - object->R)] == 255)
+								object->xyz[0] += Ball[another].R;
+							Ball[another].R = 0.0f;
 							for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
 								for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
 									Maze[j][k] = WhichOne;
@@ -753,8 +865,10 @@ void Forward_Proceeding(ball* object, int WhichOne)
 						else if (object->R > Ball[another].R)//eat another
 						{
 							fprintf(stderr, "#4Which = %d another = %d\n", WhichOne, another);
+							int tmp = object->R;
 							object->R += Ball[another].R;
 							object->prey = 255;
+							fprintf(stderr, "xyz = %f %f %f \n", object->xyz[0], object->xyz[1], object->xyz[2]);
 							fprintf(stderr, "speed = %f %f %f \n", object->speed[0], object->speed[1], object->speed[2]);
 							normalize(object->speed);
 							fprintf(stderr, "speed = %f %f %f \n", object->speed[0], object->speed[1], object->speed[2]);
@@ -764,17 +878,23 @@ void Forward_Proceeding(ball* object, int WhichOne)
 							for (int j = Ball[another].xyz[2] - Ball[another].R; j <= Ball[another].xyz[2] + Ball[another].R; j++)
 								for (int k = Ball[another].xyz[0] - Ball[another].R; k <= Ball[another].xyz[0] + Ball[another].R; k++)
 									Maze[j][k] = 100;
-							Ball[another].R = 0.0f;
+							
 							if (another < 4)
 								Ball[another].role = 255;
 							if (StartPos[2] - object->R < 0)
 								object->xyz[2] = object->R;
 							else if (StartPos[2] + object->R > 200)
 								object->xyz[2] = 200 - object->R;
+							else if (tmp != object->R&&Maze[(int)(StartPos[2] + Ball[another].R + object->R)][StartPos[0]] == 255)
+								object->xyz[2] -= Ball[another].R;
+							else if (tmp != object->R && Maze[(int)(StartPos[2] - Ball[another].R - object->R)][StartPos[0]] == 255)
+								object->xyz[2] += Ball[another].R;
 							if (StartPos[0] - object->R < 0)
 								object->xyz[0] = object->R;
 							else if (StartPos[0] + object->R > 200)
 								object->xyz[0] = 200 - object->R;	
+							
+							Ball[another].R = 0.0f;
 							for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
 								for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
 									Maze[j][k] = WhichOne;
@@ -801,7 +921,7 @@ void myIdle()
 		Cindex = Cindex == 0 ? 1 : 0;
 		Crate = 0;
 	}
-	for (int i = 4; i < 5/*NumofBalls*/; i++)
+	for (int i = 4; i < NumofBalls; i++)
 		if (Ball[i].R == 0.0f)
 		{
 			Ball[i].BottleNeck++;

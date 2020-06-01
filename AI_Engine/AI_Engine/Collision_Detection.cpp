@@ -1,6 +1,6 @@
 #include "Collision_Detection.h"
 static float Canves[4][3] = {
-	{182.0f, 0.0f, 169.0f}, {57.0f, 0.0f, 100.0f}, {144.0f, 0.0f, 7.0f}
+	{169.0f, 0.0f, 156.0f}, {57.0f, 0.0f, 100.0f}, {144.0f, 0.0f, 7.0f}
 };
 float Forward_Vector[4][3] = {
 	{0.0f, 0.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}
@@ -104,7 +104,7 @@ void Predator_Detection(ball * object)
 {
 	if (Conditional_Judge(object, '|', 200.0f, 0.0f, 200.0f, 0.0f))//°»´ú¦³¨S¦³¶W¥X½d³òx¡By : 0~200
 		Reaction(object);
-	else if (Conditional_Judge(object, '&', 0.0f, 14.0f, 178.0f, 200.0f))//²Ä0°Ï
+	else if (Conditional_Judge(object, '&', 0.0f, 14.0f, 176.0f, 200.0f))//²Ä0°Ï
 	{	//¬O§_¶i¤J¥ª¤Ucornerªº°Ï°ì¡A§PÂ_¬O§_¸I¼²
 		if (object->Area == 0)
 		{
@@ -125,7 +125,7 @@ void Predator_Detection(ball * object)
 		else if (Wall_Detection(object, 0.0f, 4.0f, 182.0f, 186.0f))
 			Reaction(object);
 	}
-	else if (Conditional_Judge(object, '&', 176.0f, 200.0f, 0.0f, 50.0f))//²Ä1°Ï
+	else if (Conditional_Judge(object, '&', 157.0f, 200.0f, 0.0f, 55.0f))//²Ä1°Ï
 	{	//¬O§_¶i¤J¥k¤Wcornerªº°Ï°ì¡A§PÂ_¬O§_¸I¼²
 		if (object->Area == 1)
 		{
@@ -172,7 +172,7 @@ void Predator_Detection(ball * object)
 		if (object->Area == 6)
 		{
 			object->BottleNeck++;
-			if (object->BottleNeck > 100)
+			if (object->BottleNeck > 1)
 			{
 				object->BottleNeck = 0;
 				object->right = object->right == true ? false : true;
@@ -184,7 +184,9 @@ void Predator_Detection(ball * object)
 			object->BottleNeck = 0;
 		}
 		InOpenSpace(object);
-		if (Wall_Detection(object, 48.0f, 52.0f, 73.0f, 127.0f))
+		if (Conditional_Judge(object, '&', 52.0f, 63.0f, 87.0f, 113.0f))//²Ä4°Ï:open space¥ªÃäªºPortal
+			DecideDirection(object);
+		else if (Wall_Detection(object, 48.0f, 52.0f, 73.0f, 127.0f))
 			Reaction(object);
 		else if (Wall_Detection(object, 148.0f, 152.0f, 73.0f, 127.0f))
 			Reaction(object);
@@ -192,19 +194,22 @@ void Predator_Detection(ball * object)
 			Reaction(object);
 		else if (Wall_Detection(object, 73.0f, 127.0f, 148.0f, 152.0f))
 			Reaction(object);
+		else if (Wall_Detection(object, 139.0f, 149.0f, 139.0f, 149.0f))//cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 139.0f, 149.0f, 51.0f, 61.0f))//cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 51.0f, 61.0f, 139.0f, 149.0f))//cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 51.0f, 61.0f, 51.0f, 61.0f))//cylinder
+			Reaction(object);
+		
 	}
-	else if (Conditional_Judge(object, '&', 175.0f, 188.0f, 162.0f, 175.0f))//²Ä3°Ï:¥k¤UªºPortal
-		DecideDirection(object);
-	else if (Conditional_Judge(object, '&', 52.0f, 62.0f, 87.0f, 113.0f))//²Ä4°Ï:open space¥ªÃäªºPortal
-		DecideDirection(object);	
-	else if (Conditional_Judge(object, '&', 137.0f, 150.0f, 0.0f, 13.0f))//²Ä5°Ï:¥k¤WªºPortal
-		DecideDirection(object);
-	else
+	else if (Conditional_Judge(object, '&', 14.0f, 157.0f, 157.0f, 200.0f))//²Ä7°Ï:open space ¤U¤èªº°Ï°ì
 	{
 		if (object->Area == 7)
 		{
 			object->BottleNeck++;
-			if (object->BottleNeck > 300)
+			if (object->BottleNeck > 5)
 			{
 				object->BottleNeck = 0;
 				object->right = object->right == true ? false : true;
@@ -214,8 +219,88 @@ void Predator_Detection(ball * object)
 		{
 			object->Area = 7;
 			object->BottleNeck = 0;
-			
 		}
+		if (Wall_Detection(object, 24.0f, 28.0f, 166.0f, 200.0f))//³Ì¥ªÃäwall
+			Reaction(object);
+		if(Wall_Detection(object, 68.0f, 78.0f, 188.0f, 192.0f))//T¦rwall(¤W)
+			Reaction(object);
+		if (Wall_Detection(object, 68.0f, 72.0f, 192.0f, 200.0f))//T¦rwall(¤U)
+			Reaction(object);
+		if (Wall_Detection(object, 50.0f, 90.0f, 174.0f, 178.0f))//¤M¦rwall(¤W)
+			Reaction(object);
+		if (Wall_Detection(object, 86.0f, 90.0f, 178.0f, 200.0f))//¤M¦rwall(¤U)
+			Reaction(object);
+		if (Wall_Detection(object, 90.0f, 130.0f, 188.0f, 192.0f))//¤M¦rwall(¤U)
+			Reaction(object);
+		if (Wall_Detection(object, 108.0f, 112.0f, 166.0f, 190.0f))//¤M¦rwall(¤U)
+			Reaction(object);
+	}
+	else if (Conditional_Judge(object, '&', 157.0f, 200.0f, 55.0f, 200.0f))//²Ä8°Ï:Maze ¥k¤U¤èªº°Ï°ì
+	{
+		if (object->Area == 8)
+		{
+			object->BottleNeck++;
+			if (object->BottleNeck > 18)
+			{
+				object->BottleNeck = 0;
+				object->right = object->right == true ? false : true;
+			}
+		}
+		else
+		{
+			object->Area = 8;
+			object->BottleNeck = 0;
+		}
+		if (Wall_Detection(object, 188.0f, 200.0f, 188.0f, 200.0f))//¥k¤U¨¤cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 175.0f, 200.0f, 98.0f, 102.0f))//¥k¤U¨¤cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 196.0f, 200.0f, 70.0f, 130.0f))//¥k¤U¨¤cylinder
+			Reaction(object);
+		else if (Conditional_Judge(object, '&', 162.0f, 175.0f, 149.0f, 162.0f))//²Ä3°Ï:¥k¤UªºPortal
+			DecideDirection(object);
+	}
+	else if (Conditional_Judge(object, '&', 0.0f, 43.0f, 0.0f, 157.0f))//²Ä8°Ï:Maze ¥k¤U¤èªº°Ï°ì
+	{
+		if (object->Area == 9)
+		{
+			object->BottleNeck++;
+			if (object->BottleNeck > 50)
+			{
+				object->BottleNeck = 0;
+				object->right = object->right == true ? false : true;
+			}
+		}
+		else
+		{
+			object->Area = 9;
+			object->BottleNeck = 0;
+		}
+		if (Wall_Detection(object, 0.0f, 10.0f, 0.0f, 10.0f))//²Ä9°Ï ¥ª¤W¨¤cylinder
+			Reaction(object);
+		else if (Wall_Detection(object, 0.0f, 25.0f, 98.0f, 102.0f))//²Ä9°Ï ¤@¦rwall
+			Reaction(object);
+		else if (Wall_Detection(object, 12.0f, 18.0f, 60.0f, 140.0f))//²Ä9°Ï  | ¦rwall
+			Reaction(object);
+	}
+	else if (Conditional_Judge(object, '&', 43.0f, 157.0f, 0.0f, 41.0f))//²Ä8°Ï:Maze ¥k¤U¤èªº°Ï°ì
+	{
+		if (object->Area == 10)
+		{
+			object->BottleNeck++;
+			if (object->BottleNeck > 50)
+			{
+				object->BottleNeck = 0;
+				object->right = object->right == true ? false : true;
+			}
+		}
+		else
+		{
+			object->Area = 10;
+			object->BottleNeck = 0;
+		}
+		if (Conditional_Judge(object, '&', 137.0f, 150.0f, 0.0f, 13.0f))//²Ä5°Ï:¥k¤WªºPortal
+			DecideDirection(object);
 	}
 }
 void Detect_Boundary(ball* object, int WhichOne)//ÀË¬d¬O§_¶W¥X¦a¹Ï½d³ò©Î»PÀð¾Àµo¥Í¸I¼²
@@ -277,7 +362,7 @@ void Detect_Boundary(ball* object, int WhichOne)//ÀË¬d¬O§_¶W¥X¦a¹Ï½d³ò©Î»PÀð¾Àµo
 				object->Direction = (object->Direction + 2) % 4;
 				object->right = !object->right;
 			}
-			if (Conditional_Judge(object, '|', 157, 43, 157, 41))//°»´ú²Ä6°Ïx:43~157 y:41:157
+			if (Conditional_Judge(object, '|', 161, 39, 159, 37))//°»´ú²Ä6°Ïx:43~157 y:41:157
 				Reaction(object);
 			else if (Wall_Detection(object, 48.0f, 52.0f, 83.0f, 127.0f))
 				Reaction(object);
@@ -287,6 +372,15 @@ void Detect_Boundary(ball* object, int WhichOne)//ÀË¬d¬O§_¶W¥X¦a¹Ï½d³ò©Î»PÀð¾Àµo
 				Reaction(object);
 			else if (Wall_Detection(object, 73.0f, 127.0f, 148.0f, 152.0f))
 				Reaction(object);
+			else if (Wall_Detection(object, 139.0f, 149.0f, 139.0f, 149.0f))//cylinder
+				Reaction(object);
+			else if (Wall_Detection(object, 139.0f, 149.0f, 51.0f, 61.0f))//cylinder
+				Reaction(object);
+			else if (Wall_Detection(object, 51.0f, 61.0f, 139.0f, 149.0f))//cylinder
+				Reaction(object);
+			else if (Wall_Detection(object, 51.0f, 61.0f, 51.0f, 61.0f))//cylinder
+				Reaction(object);
+			InOpenSpace(object);
 		}
 		break;
 	}
@@ -352,6 +446,11 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 									Ball[i].speed[0] *= 1.5;
 								else
 									Ball[i].speed[0] *= 2;*/
+							}
+							else
+							{
+								Ball[i].prey = enemy;
+								Ball[i].speed[2] *= -1;
 							}
 							Break = 1;
 							break;
@@ -436,6 +535,11 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								else
 									Ball[i].speed[2] *= 2;*/
 							}
+							else
+							{
+								Ball[i].prey = enemy;
+								Ball[i].speed[0] *= -1;
+							}
 							Break = 1;
 							break;
 						}
@@ -515,6 +619,11 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								else
 									Ball[i].speed[0] *= 2;*/
 							}
+							else
+							{
+								Ball[i].prey = enemy;
+								Ball[i].speed[2] *= -1;
+							}
 							Break = 1;
 							break;
 						}
@@ -591,6 +700,11 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								Ball[i].speed[2] *= 1.5;
 							else
 								Ball[i].speed[2] *= 2;*/
+						}
+						else
+						{
+							Ball[i].prey = enemy;
+							Ball[i].speed[0] *= -1;
 						}
 						Break = 1;
 						break;

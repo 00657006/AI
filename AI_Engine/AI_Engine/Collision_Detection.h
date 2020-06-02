@@ -19,6 +19,7 @@ typedef struct ball {
 	bool right;
 	unsigned char prey;
 	unsigned char Target[3];
+	int Wait;
 };
 
 extern ball Ball[12];

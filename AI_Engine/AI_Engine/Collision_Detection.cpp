@@ -59,6 +59,7 @@ void DecideDirection(ball* object)
 	{//¤è¦V¦³¤W ¥ª ¤U ¥k
 		object->Direction = direction;
 		RotateY(object->speed, -90.0f * (direction - before));
+		normalize(object->speed);
 		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
 		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
 	}
@@ -68,6 +69,7 @@ void DecideDirection(ball* object)
 			direction = 1;
 		object->Direction = direction;
 		RotateY(object->speed, -90.0f * (direction - before));
+		normalize(object->speed);
 		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
 		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
 	}
@@ -77,6 +79,7 @@ void DecideDirection(ball* object)
 			direction = 1;
 		object->Direction = direction;
 		RotateY(object->speed, -90.0f * (direction - before));
+		normalize(object->speed);
 		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
 		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
 	}
@@ -95,6 +98,7 @@ void DecideDirection(ball* object)
 			direction = 3;
 		object->Direction = direction;
 		RotateY(object->speed, -90.0f * (direction - before));
+		normalize(object->speed);
 		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
 		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
 	}
@@ -260,7 +264,7 @@ void Predator_Detection(ball * object)
 		if (object->Area == 8)
 		{
 			object->BottleNeck++;
-			if (object->BottleNeck > 10)
+			if (object->BottleNeck > 20)
 			{
 				object->BottleNeck = 0;
 				object->right = object->right == true ? false : true;
@@ -277,10 +281,10 @@ void Predator_Detection(ball * object)
 			Reaction(object);
 		else if (Wall_Detection(object, 196.0f, 200.0f, 70.0f, 130.0f))//|¦rwall
 			Reaction(object);
-		else if (Conditional_Judge(object, '&', 162.0f, 175.0f, 149.0f, 162.0f))//²Ä3°Ï:¥k¤UªºPortal
+		else if (Conditional_Judge(object, '&', 162.0f, 178.0f, 149.0f, 163.0f))//²Ä3°Ï:¥k¤UªºPortal
 			DecideDirection(object);
 	}
-	else if (Conditional_Judge(object, '&', 0.0f, 43.0f, 0.0f, 157.0f))//²Ä8°Ï:Maze ¥k¤U¤èªº°Ï°ì
+	else if (Conditional_Judge(object, '&', 0.0f, 43.0f, 0.0f, 157.0f))//²Ä9°Ï:Maze ¥ª¤W¤èªº°Ï°ì
 	{
 		if (object->Area == 9)
 		{
@@ -305,12 +309,12 @@ void Predator_Detection(ball * object)
 		else if (Conditional_Judge(object, '&', 0.0f, 13.0f, 112.0f, 126.0f))//²Ä9°Ï:¤¤¤UªºPortal
 			DecideDirection(object);
 	}
-	else if (Conditional_Judge(object, '&', 43.0f, 157.0f, 0.0f, 41.0f))//²Ä8°Ï:Maze ¥k¤U¤èªº°Ï°ì
+	else if (Conditional_Judge(object, '&', 43.0f, 157.0f, 0.0f, 41.0f))//²Ä10°Ï:Maze ¥k¤U¤èªº°Ï°ì
 	{
 		if (object->Area == 10)
 		{
 			object->BottleNeck++;
-			if (object->BottleNeck > 50)
+			if (object->BottleNeck > 24)
 			{
 				object->BottleNeck = 0;
 				object->right = object->right == true ? false : true;
@@ -340,34 +344,34 @@ void Detect_Boundary(ball* object, int WhichOne)//ÀË¬d¬O§_¶W¥X¦a¹Ï½d³ò©Î»PÀð¾Àµo
 			{
 				object->BottleNeck = 0;
 				float direction[3] = { 100 - object->xyz[0] , 0.0f , 100 - object->xyz[2] };
-				normalize(direction);
+				normalize(direction); 
+				for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+					for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
+						Maze[j][k] = 100;
 				object->xyz[0] += direction[0] * 5;
 				object->xyz[2] += direction[2] * 5;
+				for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+					for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
+						Maze[j][k] = 3;
 				gap++;
 				if (gap == 14)
 				{
+					int Bindex = Maze[100][100];
+					for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+						for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
+							Maze[j][k] = 100;
 					object->xyz[0] = 100.0f;
 					object->xyz[2] = 100.0f;
-					int Bindex = Maze[(int)object->xyz[2]][(int)object->xyz[0]];
-					if (Bindex >= 2 && Bindex < NumofBalls)
+					if (Bindex >= 4 && Bindex < NumofBalls)
 					{
-						if (object->R > Ball[Bindex].R)
-						{
-							Maze[(int)object->xyz[2]][(int)object->xyz[0]] = WhichOne;
-							object->R += Ball[Bindex].R;
-							object->xyz[1] = object->R;
-							Ball[Bindex].R = 0.0f;
-						}
-						else if (object->R < Ball[Bindex].R)
-						{
-							Maze[(int)object->xyz[2]][(int)object->xyz[0]] = Bindex;
-							Ball[Bindex].R += object->R;
-							Ball[Bindex].xyz[1] = object->R;
-							object->R = 0.0f;
-						}
+						for (int j = object->xyz[2] - object->R; j <= object->xyz[2] + object->R; j++)
+							for (int k = object->xyz[0] - object->R; k <= object->xyz[0] + object->R; k++)
+								Maze[j][k] = 3;
+						object->Wait = 0;
+						object->R += Ball[Bindex].R;
+						object->xyz[1] = object->R;
+						Ball[Bindex].R = 0.0f;
 					}
-					else
-						Maze[(int)object->xyz[2]][(int)object->xyz[0]] = WhichOne;
 					gap = 0;
 				}
 			}
@@ -485,6 +489,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								fprintf(stderr, "%d pursuit %d\n", i, enemy);
 								fprintf(stderr, "%d\n", FuzzyLogic(length));
 								Ball[i].prey = enemy;
+								Ball[i].Target[0] = Ball[enemy].xyz[0];
+								Ball[i].Target[1] = Ball[enemy].xyz[1];
+								Ball[i].Target[2] = Ball[enemy].xyz[2];
 								if (FuzzyLogic(length) == 0)//close
 									Ball[i].speed[2] *= 1.2;
 								else if (FuzzyLogic(length) == 1)//comfortable
@@ -511,6 +518,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 							fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][k]);
 							fprintf(stderr, "%d\n", FuzzyLogic(length));
 							Ball[i].prey = Maze[Bindex][k];
+							Ball[i].Target[0] = Ball[Maze[Bindex][k]].xyz[0];
+							Ball[i].Target[1] = Ball[Maze[Bindex][k]].xyz[1];
+							Ball[i].Target[2] = Ball[Maze[Bindex][k]].xyz[2];
 							if (FuzzyLogic(length) == 0)//close
 								Ball[i].speed[2] *= 1.2;
 							else if (FuzzyLogic(length) == 1)//comfortable
@@ -573,6 +583,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								fprintf(stderr, "%d pursuit %d\n", i, enemy);
 								fprintf(stderr, "%d\n", FuzzyLogic(length));
 								Ball[i].prey = enemy;
+								Ball[i].Target[0] = Ball[enemy].xyz[0];
+								Ball[i].Target[1] = Ball[enemy].xyz[1];
+								Ball[i].Target[2] = Ball[enemy].xyz[2];
 								fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
 								if (FuzzyLogic(length) == 0)//close
 									Ball[i].speed[2] *= 1.2;
@@ -593,6 +606,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 							fprintf(stderr, "%d pursuit food %d \n", i, Maze[k][Bindex]);
 							fprintf(stderr, "%d\n", FuzzyLogic(length));
 							Ball[i].prey = Maze[k][Bindex];
+							Ball[i].Target[0] = Ball[Maze[k][Bindex]].xyz[0];
+							Ball[i].Target[1] = Ball[Maze[k][Bindex]].xyz[1];
+							Ball[i].Target[2] = Ball[Maze[k][Bindex]].xyz[2];
 							if (FuzzyLogic(length) == 0)//close
 								Ball[i].speed[2] *= 1.2;
 							else if (FuzzyLogic(length) == 1)//comfortable
@@ -658,6 +674,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 								fprintf(stderr, "%d\n", FuzzyLogic(length));
 								fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
 								Ball[i].prey = enemy;
+								Ball[i].Target[0] = Ball[Maze[k][Bindex]].xyz[0];
+								Ball[i].Target[1] = Ball[Maze[k][Bindex]].xyz[1];
+								Ball[i].Target[2] = Ball[Maze[k][Bindex]].xyz[2];
 								if (FuzzyLogic(length) == 0)//close
 									Ball[i].speed[2] *= 1.2;
 								else if (FuzzyLogic(length) == 1)//comfortable
@@ -677,6 +696,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 							fprintf(stderr, "%d pursuit food %d \n", i, Maze[Bindex][k]);
 							fprintf(stderr, "%d\n", FuzzyLogic(length));
 							Ball[i].prey = Maze[Bindex][k];
+							Ball[i].Target[0] = Ball[Maze[k][Bindex]].xyz[0];
+							Ball[i].Target[1] = Ball[Maze[k][Bindex]].xyz[1];
+							Ball[i].Target[2] = Ball[Maze[k][Bindex]].xyz[2];
 							if (FuzzyLogic(length) == 0)//close
 								Ball[i].speed[2] *= 1.2;
 							else if (FuzzyLogic(length) == 1)//comfortable
@@ -740,6 +762,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 							fprintf(stderr, "%d\n", FuzzyLogic(length));
 							fprintf(stderr, "%f %f %f\n", Ball[enemy].xyz[0], Ball[enemy].xyz[1], Ball[enemy].xyz[2]);
 							Ball[i].prey = enemy;
+							Ball[i].Target[0] = Ball[Maze[k][Bindex]].xyz[0];
+							Ball[i].Target[1] = Ball[Maze[k][Bindex]].xyz[1];
+							Ball[i].Target[2] = Ball[Maze[k][Bindex]].xyz[2];
 							if (FuzzyLogic(length) == 0)//close
 								Ball[i].speed[2] *= 1.2;
 							else if (FuzzyLogic(length) == 1)//comfortable
@@ -759,6 +784,9 @@ void Investigation(ball* Balls)//Predator°»´ú¬O§_¹J¨ìenemy©Îfood¡AÂê©wprey(ÄÝ©ó¬
 						fprintf(stderr, "%d pursuit food %d \n", i, Maze[k][Bindex]);
 						fprintf(stderr, "%d\n", FuzzyLogic(length));
 						Ball[i].prey = Maze[k][Bindex];
+						Ball[i].Target[0] = Ball[Maze[k][Bindex]].xyz[0];
+						Ball[i].Target[1] = Ball[Maze[k][Bindex]].xyz[1];
+						Ball[i].Target[2] = Ball[Maze[k][Bindex]].xyz[2];
 						if (FuzzyLogic(length) == 0)//close
 							Ball[i].speed[2] *= 1.2;
 						else if (FuzzyLogic(length) == 1)//comfortable

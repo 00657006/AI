@@ -272,7 +272,7 @@ void SetUpObject()
 			}
 			else if (i == 8)
 			{
-				Location(&Ball[i], 195.0f, 1.0f, 60.0f, i);
+				Location(&Ball[i], 197.0f, 1.0f, 60.0f, i);
 				Ball[i].Area = 8;
 			}
 			else if (i == 9)
@@ -287,8 +287,8 @@ void SetUpObject()
 			}
 			else if (i == 11)
 			{
-				Location(&Ball[i], 175.0f, 1.0f, 195.0f, i);
-				Ball[i].Area = 9;
+				Location(&Ball[i], 195.0f, 1.0f, 195.0f, i);
+				Ball[i].Area = 8;
 			}
 		}			
 	}
@@ -348,6 +348,8 @@ void draw_floor()
 	ApplyTexture(162.0f, 175.0f, 150.0f, 163.0f, 0.01f, Canves[Cindex]);
 	ApplyTexture(62.5f, 52.0f, 113.0f, 87.0f, 0.01f, Canves[Cindex]);
 	ApplyTexture(150.0f, 137.0f, 13.0f, 0.0f, 0.01f, Canves[Cindex]);
+	ApplyTexture(13.0f, 0.0f, 126.0f, 112.0f, 0.01f, Canves[Cindex]);
+	ApplyTexture(137.0f, 148.0f, 87.0f, 113.0f, 0.01f, Canves[Cindex]);
 }
 void CreateTextures()
 {	
@@ -646,9 +648,9 @@ void draw_maze()
 	draw_wall(196.0f, 4.0f, 35.0f, 8.0f, 8.0f, 4.0f);
 
 	draw_wall(100.0f, 4.0f, 48.0f, 54.0f, 8.0f, 4.0f); /*open space 外圍牆(上)*/
-	draw_wall(150.0f, 4.0f, 100.0f, 4.0f, 8.0f, 54.0f);/*open space 外圍牆(右)*/
+	draw_wall(150.0f, 4.0f, 100.0f, 4.0f, 8.0f, 50.0f);/*open space 外圍牆(右)*/
 	draw_wall(100.0f, 4.0f, 150.0f, 54.0f, 8.0f, 4.0f);/*open space 外圍牆(下)*/
-	draw_wall(50.0f, 4.0f, 100.0f, 4.0f, 8.0f, 54.0f);/*open space 外圍牆(左)*/
+	draw_wall(50.0f, 4.0f, 100.0f, 4.0f, 8.0f, 50.0f);/*open space 外圍牆(左)*/
 
 	draw_wall(26.0f, 4.0f, 183.0f, 4.0f, 8.0f, 34.0f);/*第7區 最左wall*/
 	draw_wall(73.0f, 4.0f, 190.0f, 10.0f, 8.0f, 4.0f);/*第7區 T字wall(上)*/
@@ -658,7 +660,7 @@ void draw_maze()
 	draw_wall(110.0f, 4.0f, 190.0f, 40.0f, 8.0f, 4.0f);/*第7區 倒刀字wall(上)*/
 	draw_wall(110.0f, 4.0f, 178.0f, 4.0f, 8.0f, 24.0f);/*第7區 倒刀字wall(下)*/
 
-	draw_cylinder(194.0f, 0.0f, 194.0f);//右下角
+	draw_cylinder(181.0f, 0.0f, 194.0f);//右下角
 	draw_cylinder(6.0f, 0.0f, 6.0f);//左下角
 
 	draw_wall(12.5f, 4.0f, 100.0f, 25.0f, 8.0f, 4.0f);/*第9區 一字wall*/

@@ -1,6 +1,6 @@
 #include "Collision_Detection.h"
-static float Canves[4][3] = {
-	{169.0f, 0.0f, 156.0f}, {57.0f, 0.0f, 100.0f}, {144.0f, 0.0f, 7.0f}
+static float Canves[5][3] = {
+	{169.0f, 0.0f, 156.0f}, {57.0f, 0.0f, 100.0f}, {144.0f, 0.0f, 7.0f}, {7.0f, 0.0f, 119.0f}, {143.0f, 0.0f, 100.0f}
 };
 float Forward_Vector[4][3] = {
 	{0.0f, 0.0f, -1.0f}, { 1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}
@@ -52,7 +52,7 @@ void Reaction(ball* object)
 }
 void DecideDirection(ball* object)
 {
-	unsigned char index = rand() % 3;
+	unsigned char index = rand() % 5;
 	unsigned char direction = rand() % 4;
 	unsigned char before = object->Direction;
 	if (index == 0)
@@ -75,6 +75,24 @@ void DecideDirection(ball* object)
 	{//方向只有左 下 右
 		if (direction == 0)
 			direction = 1;
+		object->Direction = direction;
+		RotateY(object->speed, -90.0f * (direction - before));
+		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
+		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
+	}
+	else if (index == 3)
+	{//方向只有下
+		direction = 2;
+		object->Direction = 2;
+		object->speed[2] = 1.0f;
+		object->speed[0] = 0.0f;
+		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
+		object->xyz[2] = Canves[index][2] + Forward_Vector[direction][2] * (7.0f + object->R);
+	}
+	else if (index == 4)
+	{//方向只有上 下 右
+		if (direction == 1)
+			direction = 3;
 		object->Direction = direction;
 		RotateY(object->speed, -90.0f * (direction - before));
 		object->xyz[0] = Canves[index][0] + Forward_Vector[direction][0] * (7.0f + object->R);
@@ -186,9 +204,11 @@ void Predator_Detection(ball * object)
 		InOpenSpace(object);
 		if (Conditional_Judge(object, '&', 52.0f, 63.0f, 87.0f, 113.0f))//第4區:open space左邊的Portal
 			DecideDirection(object);
-		else if (Wall_Detection(object, 48.0f, 52.0f, 73.0f, 127.0f))
+		else if (Conditional_Judge(object, '&', 137.0f, 148.0f, 87.0f, 113.0f))//第4區:open space左邊的Portal
+			DecideDirection(object);
+		else if (Wall_Detection(object, 48.0f, 52.0f, 75.0f, 125.0f))
 			Reaction(object);
-		else if (Wall_Detection(object, 148.0f, 152.0f, 73.0f, 127.0f))
+		else if (Wall_Detection(object, 148.0f, 152.0f, 75.0f, 125.0f))
 			Reaction(object);
 		else if (Wall_Detection(object, 73.0f, 127.0f, 46.0f, 50.0f))
 			Reaction(object);
@@ -240,7 +260,7 @@ void Predator_Detection(ball * object)
 		if (object->Area == 8)
 		{
 			object->BottleNeck++;
-			if (object->BottleNeck > 18)
+			if (object->BottleNeck > 10)
 			{
 				object->BottleNeck = 0;
 				object->right = object->right == true ? false : true;
@@ -251,11 +271,11 @@ void Predator_Detection(ball * object)
 			object->Area = 8;
 			object->BottleNeck = 0;
 		}
-		if (Wall_Detection(object, 188.0f, 200.0f, 188.0f, 200.0f))//右下角cylinder
+		if (Wall_Detection(object, 177.0f, 185.0f, 188.0f, 200.0f))//右下角cylinder
 			Reaction(object);
-		else if (Wall_Detection(object, 175.0f, 200.0f, 98.0f, 102.0f))//右下角cylinder
+		else if (Wall_Detection(object, 175.0f, 200.0f, 98.0f, 102.0f))//一字wall
 			Reaction(object);
-		else if (Wall_Detection(object, 196.0f, 200.0f, 70.0f, 130.0f))//右下角cylinder
+		else if (Wall_Detection(object, 196.0f, 200.0f, 70.0f, 130.0f))//|字wall
 			Reaction(object);
 		else if (Conditional_Judge(object, '&', 162.0f, 175.0f, 149.0f, 162.0f))//第3區:右下的Portal
 			DecideDirection(object);
@@ -282,6 +302,8 @@ void Predator_Detection(ball * object)
 			Reaction(object);
 		else if (Wall_Detection(object, 12.0f, 18.0f, 60.0f, 140.0f))//第9區  | 字wall
 			Reaction(object);
+		else if (Conditional_Judge(object, '&', 0.0f, 13.0f, 112.0f, 126.0f))//第9區:中下的Portal
+			DecideDirection(object);
 	}
 	else if (Conditional_Judge(object, '&', 43.0f, 157.0f, 0.0f, 41.0f))//第8區:Maze 右下方的區域
 	{
